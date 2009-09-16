@@ -186,7 +186,7 @@ public final class ImageStreamServer
 		
 		try
 		{
-			(new ImageStreamServer(new LinuxDeviceImageStream(320,240),port,true)).start();
+			(new ImageStreamServer(new LinuxDeviceImageStream(320,240),port)).start();
 			System.out.println( "ImageStreamServer listening on port "+port );
 		} catch (Exception ball)
 		{
