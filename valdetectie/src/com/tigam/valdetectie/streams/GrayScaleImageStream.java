@@ -4,6 +4,11 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
+/**
+ * This is a wrapper for any {@link ImageStream} that makes every image gray scaled.
+ * 
+ * @author Koen Bollen & Nils Dijk
+ */
 public class GrayScaleImageStream implements ImageStream
 {
 	private final ImageStream stream;

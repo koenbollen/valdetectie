@@ -8,8 +8,7 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 
 /**
- * An implementation of {@link ImageStream} to capture frames from a webcam in
- * linux
+ * An implementation of {@link ImageStream} that reads a video file.
  * 
  * @author Koen Bollen
  */

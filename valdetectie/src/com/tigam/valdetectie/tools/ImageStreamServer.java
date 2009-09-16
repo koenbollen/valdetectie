@@ -16,8 +16,15 @@ import javax.imageio.ImageIO;
 
 import com.tigam.valdetectie.streams.ImageStream;
 import com.tigam.valdetectie.streams.LinuxDeviceImageStream;
+import com.tigam.valdetectie.streams.NetworkImageStream;
 
 
+/**
+ * This tool opens a {@link LinuxDeviceImageStream} and shares it to connected clients.
+ * 
+ * @see NetworkImageStream
+ * @author Nils Dijk
+ */
 public final class ImageStreamServer
 {
 	public static final int DEFAULT_PORT = 46243;

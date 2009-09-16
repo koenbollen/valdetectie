@@ -12,6 +12,12 @@ import javax.imageio.ImageIO;
 import com.tigam.valdetectie.tools.ImageStreamServer;
 import com.tigam.valdetectie.utils.Imager;
 
+/**
+ * This is a network implementation of {@link ImageStream} that connects to
+ * a running {@link ImageStreamServer}.
+ * 
+ * @author Nils Dijk
+ */
 public class NetworkImageStream implements ImageStream
 {
 	private Socket s;
@@ -43,6 +49,12 @@ public class NetworkImageStream implements ImageStream
 	}
 
 
+	/**
+	 * This is a simple test main that connects to the given host and displays the frame in 
+	 * an {@link Imager} frame.
+	 *  
+	 * @param args
+	 */
 	public static void main(String[] args)
 	{
 		String host = "localhost";

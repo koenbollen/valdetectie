@@ -9,6 +9,12 @@ import com.tigam.valdetectie.streams.ImageStream;
 import com.tigam.valdetectie.streams.VideoFileImageStream;
 import com.tigam.valdetectie.utils.Imager;
 
+/**
+ * This class is a simple tool that opens a file as a 
+ * {@link VideoFileImageStream} and display the frames.
+ * 
+ * @author Koen Bollen
+ */
 public class ViewVideoFile
 {
 

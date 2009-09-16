@@ -6,10 +6,16 @@ import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
+/**
+ * Utils class, contains some nifty static methods.
+ * 
+ * @author Koen Bollen
+ */
 public class Utils
 {
 	/**
-	 * Show's an image in a dialog and blocks the program.
+	 * Show's an image in a dialog and blocks the program. Method returns when
+	 * the dialog is closed.
 	 * 
 	 * @param image The image to display
 	 */
