@@ -5,9 +5,8 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import com.tigam.valdetectie.streams.GrayScaleImageStream;
-import com.tigam.valdetectie.streams.VideoFileImageStream;
 import com.tigam.valdetectie.streams.ImageStream;
+import com.tigam.valdetectie.streams.VideoFileImageStream;
 import com.tigam.valdetectie.utils.Imager;
 
 public class ViewVideoFile
@@ -15,14 +14,20 @@ public class ViewVideoFile
 
 	public static void main(String[] args)
 	{
-		File file;
+		File file = null;
 		
-		final JFileChooser fc = new JFileChooser();
-
-		int res = fc.showOpenDialog(null);
-		if( res != JFileChooser.APPROVE_OPTION )
-			System.exit(1);
-		file = fc.getSelectedFile();
+		if( args.length >= 1 )
+		{
+			file = new File( args[0] );
+		}
+		else
+		{
+			JFileChooser fc = new JFileChooser();
+			int res = fc.showOpenDialog(null);
+			if( res != JFileChooser.APPROVE_OPTION )
+				System.exit(1);
+			file = fc.getSelectedFile();
+		}
 		
 		ImageStream str = null;
 		try
@@ -34,6 +39,7 @@ public class ViewVideoFile
 			System.exit(0);
 		}
 		Imager imager = new Imager();
+		imager.setTitle( "Viewing file: " + file.getName() );
 		imager.setVisible(true);
 		while (true){
 			Image img = str.read();
