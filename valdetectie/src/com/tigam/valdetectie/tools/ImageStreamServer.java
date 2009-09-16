@@ -5,9 +5,12 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.ImageIO;
 
@@ -57,20 +60,40 @@ public final class ImageStreamServer
 	
 	final class ImageDispenser extends Thread {
 		private final ImageStream stream;
-		private final LinkedList<Socket> clients;
+		private final HashMap<Socket,OutputStream> clients;
 		public ImageDispenser(ImageStream stream){
 			super("ImageDispenser[stream:" + stream + "]");
 			this.stream = stream;
-			this.clients = new LinkedList<Socket>();
+			this.clients = new HashMap<Socket,OutputStream>();
 			setDaemon(true);
 		}
 		
-		public void addClient(Socket client){
+		public void addClient(Socket client) {
 			if (client == null) return;
 			
 			synchronized (clients)
 			{
-				if (!clients.contains(client)) clients.add(client);
+				try {
+					if (!clients.containsKey(client)){
+						OutputStream out = client.getOutputStream();
+						
+						// check if there is need for compression
+						if (ImageStreamServer.this.gzipped){
+							// if we use compression (gzip) start with 0x01 byte so the client knows it has to encapsulate the stream with a gzip stream
+							out.write(1);
+							out.flush();
+							out = new GZIPOutputStream(out);
+						} else {
+							// if we do not use compression send a 0x00 byte so the client knows to do nothing with the stream
+							out.write(0);
+							out.flush();
+						}
+						
+						clients.put(client,out);
+					}
+				} catch (IOException ball){
+					System.err.println("Unable to add a client to the clientlist");
+				}
 			}
 		}
 		
@@ -98,7 +121,7 @@ public final class ImageStreamServer
 			}
 			System.out.println("ImageDispenser Stopped Working");
 			
-			for (Socket s:clients){
+			for (Socket s:clients.keySet()){
 				try
 				{
 					if (!s.isClosed()) s.close();
@@ -110,29 +133,37 @@ public final class ImageStreamServer
 			synchronized (clients)
 			{
 				LinkedList<Socket> toRemove = new LinkedList<Socket>();
-				for (Socket s:clients){
+				for (Socket s:clients.keySet()){
 					if (s.isClosed()){
 						toRemove.add(s);
 						continue;
 					}
+					OutputStream out = clients.get(s);
 					try	{
-						s.getOutputStream().write(data);
+						out.write(data);
+						out.flush();
 					} catch (IOException e)
 					{
 						toRemove.add(s);
 					}
 				}
-				clients.removeAll(toRemove);
+				for (Socket s:toRemove) clients.remove(s);
 			}
 		}
 	}
 	
 	private final ImageDispenser dispenser;
 	private final ServerListener server;
+	private final boolean gzipped;
 	
 	public ImageStreamServer(ImageStream stream, int port) throws IOException{
+		this (stream, port, false);
+	}
+	
+	public ImageStreamServer(ImageStream stream, int port, boolean gzipped) throws IOException{
 		this.dispenser = new ImageDispenser(stream);
 		this.server = new ServerListener(port);
+		this.gzipped = gzipped;
 	}
 	
 	public void start(){
@@ -155,7 +186,7 @@ public final class ImageStreamServer
 		
 		try
 		{
-			(new ImageStreamServer(new LinuxDeviceImageStream(),port)).start();
+			(new ImageStreamServer(new LinuxDeviceImageStream(320,240),port,true)).start();
 			System.out.println( "ImageStreamServer listening on port "+port );
 		} catch (Exception ball)
 		{

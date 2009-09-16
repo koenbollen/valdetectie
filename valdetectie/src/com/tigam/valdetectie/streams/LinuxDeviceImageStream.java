@@ -54,13 +54,25 @@ public class LinuxDeviceImageStream implements ImageStream
 	 * @throws ImageStreamException If ffmpeg fails.
 	 */
 	public LinuxDeviceImageStream(int width, int height) throws ImageStreamException{
-		this(width,height,24,DEFAULT_DEVICE);
+		this(width,height,24);
+	}
+	
+	/**
+	 * Create a new instance of {@link LinuxDeviceImageStream} with a specified width and height
+	 * @param width the width of the image to capture
+	 * @param height the height of the image to capture
+	 * @param rate the framerate
+	 * @throws ImageStreamException If ffmpeg fails.
+	 */
+	public LinuxDeviceImageStream(int width, int height, int rate) throws ImageStreamException{
+		this(width,height,rate,DEFAULT_DEVICE);
 	}
 	
 	/**
 	 * Create a new instance of {@link LinuxDeviceImageStream} with a specified width, height and devicce to capture from
 	 * @param width the width of the image to capture
 	 * @param height the height of the image to capture
+	 * @param rate the framerate
 	 * @param device the device to capture from
 	 * @throws ImageStreamException If ffmpeg fails.
 	 */

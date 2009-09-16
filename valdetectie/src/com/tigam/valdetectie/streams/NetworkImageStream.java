@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.zip.GZIPInputStream;
 
 import javax.imageio.ImageIO;
 
@@ -27,6 +28,8 @@ public class NetworkImageStream implements ImageStream
 	{
 		s = new Socket( host, port );
 		in = s.getInputStream();
+		int gzip = in.read();
+		if (gzip == 1) in = new GZIPInputStream(in);
 	}
 
 	public Image read()
