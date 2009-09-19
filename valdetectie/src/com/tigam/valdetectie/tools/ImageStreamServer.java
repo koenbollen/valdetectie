@@ -14,6 +14,7 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.ImageIO;
 
+import com.tigam.valdetectie.streams.GrayScaleImageStream;
 import com.tigam.valdetectie.streams.ImageStream;
 import com.tigam.valdetectie.streams.LinuxDeviceImageStream;
 import com.tigam.valdetectie.streams.NetworkImageStream;
@@ -185,16 +186,44 @@ public final class ImageStreamServer
 	
 	public static void main(String ... args){
 		int port = DEFAULT_PORT;
-		try {
-			port = Integer.parseInt(args[0]);
-		} catch (IndexOutOfBoundsException ball){
-		} catch (NumberFormatException ball){
-		}
+		boolean grayscale = false;
+		boolean gzipped = false;
+		
+		for (int i = 0; i<args.length; i++){
+			if (args[i].equalsIgnoreCase("-help")){
+				System.out.println("WebcamServer [-p portnumber] [-gray] [-gzip]");
+				System.out.println();
+				System.out.println(" -p portnumeber");
+				System.out.println("    the portnumber to listen on with the server");
+				System.out.println();
+				System.out.println(" -gray");
+				System.out.println("    if this flag is set the server will stream in grayscale");
+				System.out.println();
+				System.out.println(" -gzip");
+				System.out.println("    if this flag is set the stream is compressed using gzip");
+				System.exit(0);
+			} else if (args[i].equalsIgnoreCase("-p")){
+				i++;
+				try {
+					port = Integer.parseInt(args[i]);
+				} catch (IndexOutOfBoundsException ball){
+				} catch (NumberFormatException ball){
+				}				
+			} else if (args[i].equalsIgnoreCase("-gray")){
+				grayscale = true;
+			} else if (args[i].equalsIgnoreCase("-gzip")){
+				gzipped = true;
+			}
+		}		
 		
 		try
 		{
-			(new ImageStreamServer(new LinuxDeviceImageStream(320,240),port)).start();
-			System.out.println( "ImageStreamServer listening on port "+port );
+			ImageStream imgStream = new LinuxDeviceImageStream(320,240);
+			if (grayscale) imgStream = new GrayScaleImageStream(imgStream);
+			(new ImageStreamServer(imgStream,port,gzipped)).start();
+			System.out.println( "ImageStreamServer listening on port " + port );
+			if (grayscale) System.out.println( "Images are streamed in grayscale");
+			if (gzipped) System.out.println("The stream is compressed");
 		} catch (Exception ball)
 		{
 			ball.printStackTrace();
