@@ -7,7 +7,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 
 /**
- * Utils class, contains some nifty static methods.
+ * Utilities class, contains some nifty static methods.
  * 
  * @author Koen Bollen
  */
