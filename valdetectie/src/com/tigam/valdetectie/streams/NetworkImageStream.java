@@ -34,8 +34,6 @@ public class NetworkImageStream implements ImageStream
 	{
 		s = new Socket( host, port );
 		in = s.getInputStream();
-		int gzip = in.read();
-		if (gzip == 1) in = new GZIPInputStream(in);
 	}
 
 	public Image read()
