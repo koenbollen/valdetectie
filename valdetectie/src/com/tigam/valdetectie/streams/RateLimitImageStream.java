@@ -69,14 +69,16 @@ public class RateLimitImageStream implements ImageStream
 		if( img == null )
 			return null;
 		
+		long now = time();
+		
 		// Return the first image directly:
 		if( this.last == -1 )
 		{
-			this.last = time();
+			this.last = now;
 			return img;
 		}
 		
-		long elapsed = max( 0, time()-this.last );
+		long elapsed = max( 0, now-this.last );
 		if( elapsed > this.delay )
 		{
 			long skip = elapsed / this.delay;
@@ -89,7 +91,7 @@ public class RateLimitImageStream implements ImageStream
 		
 		System.out.println( "Sleeping " + (this.delay - elapsed) + " milliseconds." );
 		sleep( this.delay - elapsed );
-		this.last = time();
+		this.last = now;
 		
 		return img;
 	}
