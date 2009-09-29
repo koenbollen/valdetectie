@@ -1,6 +1,8 @@
 package com.tigam.valdetectie.utils;
 
+import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -31,4 +33,22 @@ public class Utils
 		frame.setVisible(true);
 	}
 
+	public static int[] image2data( Image image )
+	{
+		BufferedImage bi;
+		int w = image.getWidth(null);
+		int h = image.getHeight(null);
+		if (!(image instanceof BufferedImage) || ((BufferedImage)image).getType() != BufferedImage.TYPE_INT_RGB)
+		{
+		    bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+		    Graphics g = bi.createGraphics();
+		    g.drawImage(image, 0, 0, null);
+		    g.dispose();
+		}
+		else
+		{
+			bi = (BufferedImage)image;
+		}
+		return bi.getRGB(0, 0, w, h, null, 0, w);
+	}
 }
