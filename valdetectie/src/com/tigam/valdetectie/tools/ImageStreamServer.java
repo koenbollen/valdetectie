@@ -16,10 +16,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
-import com.tigam.valdetectie.streams.GrayScaleImageStream;
 import com.tigam.valdetectie.streams.ImageStream;
 import com.tigam.valdetectie.streams.LinuxDeviceImageStream;
 import com.tigam.valdetectie.streams.NetworkImageStream;
+import com.tigam.valdetectie.streams.filters.GrayScaleImageStream;
 
 
 /**

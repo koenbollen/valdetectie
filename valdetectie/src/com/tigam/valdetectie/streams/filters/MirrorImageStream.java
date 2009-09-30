@@ -1,8 +1,10 @@
-package com.tigam.valdetectie.streams;
+package com.tigam.valdetectie.streams.filters;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+
+import com.tigam.valdetectie.streams.ImageStream;
 
 /**
  * This is a wrapper for any {@link ImageStream} that makes every image mirrored.

@@ -1,9 +1,11 @@
-package com.tigam.valdetectie.streams;
+package com.tigam.valdetectie.streams.filters;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.ByteLookupTable;
 import java.awt.image.LookupOp;
+
+import com.tigam.valdetectie.streams.ImageStream;
 
 /**
  * InvertImageStream.

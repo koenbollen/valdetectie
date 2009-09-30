@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 
 import javax.imageio.ImageIO;
 
+import com.tigam.valdetectie.streams.filters.GrayScaleImageStream;
 import com.tigam.valdetectie.tools.ImageStreamServer;
 import com.tigam.valdetectie.utils.Imager;
 

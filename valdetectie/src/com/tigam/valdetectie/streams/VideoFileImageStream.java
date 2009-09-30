@@ -35,7 +35,7 @@ public class VideoFileImageStream implements ImageStream
 		try
 		{
 			String resolution = width+"x"+height;
-			String command = "ffmpeg -i " + file + " -s "+resolution+" -f image2pipe -vcodec bmp -";
+			String command = "ffmpeg -v 0 -i " + file + " -s "+resolution+" -f image2pipe -vcodec bmp -";
 
 			Process cam = Runtime.getRuntime().exec(command);
 			in = cam.getInputStream();

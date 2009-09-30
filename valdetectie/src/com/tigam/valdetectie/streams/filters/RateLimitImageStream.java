@@ -1,6 +1,9 @@
-package com.tigam.valdetectie.streams;
+package com.tigam.valdetectie.streams.filters;
 
 import java.awt.Image;
+
+import com.tigam.valdetectie.streams.ImageStream;
+
 import static java.lang.Math.*;
 
 /**
