@@ -28,6 +28,11 @@ public class DynamicMedian
 		this.median = -1;
 	}
 	
+	/**
+	 * TODO: If number of numbers is even then take the average of the too.
+	 * 
+	 * @return
+	 */
 	public int median()
 	{
 		int c = 0, p = (this.count/2)+1;

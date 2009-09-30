@@ -6,6 +6,8 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import com.tigam.valdetectie.utils.ErrorStreamReader;
+
 /**
  * An implementation of {@link ImageStream} to capture frames from a webcam in linux
  * 
@@ -84,9 +86,10 @@ public class LinuxDeviceImageStream implements ImageStream
 		InputStream in = null;
 		try {
 			String resolution = this.width+"x"+this.height;
-			String command = "ffmpeg -f video4linux2 -s "+resolution+" -i " + this.device + " -r "+rate+" -s "+resolution+" -f image2pipe -vcodec bmp -";
+			String command = "ffmpeg -v 0 -f video4linux2 -s "+resolution+" -i " + this.device + " -r "+rate+" -s "+resolution+" -f image2pipe -vcodec bmp -";
 			
 			Process cam = Runtime.getRuntime().exec(command);
+			(new ErrorStreamReader(cam.getErrorStream())).start();
 			in = cam.getInputStream();
 		} catch (IOException ball){
 			throw new ImageStreamException( "Unable to start ffmpeg.", ball );
