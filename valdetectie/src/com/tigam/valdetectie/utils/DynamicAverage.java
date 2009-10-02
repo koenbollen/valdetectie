@@ -1,5 +1,8 @@
 package com.tigam.valdetectie.utils;
 
+/**
+ * @deprecated Use {@link MeanDeviation} instead!
+ */
 public class DynamicAverage
 {
 	private double sum;

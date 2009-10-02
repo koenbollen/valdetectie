@@ -1,12 +1,12 @@
 package com.tigam.valdetectie.algorithms;
-import static java.lang.Math.*;
+import static java.lang.Math.max;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import com.tigam.valdetectie.utils.CyclicArray;
-import com.tigam.valdetectie.utils.DynamicAverage;
 import com.tigam.valdetectie.utils.DynamicMedian;
+import com.tigam.valdetectie.utils.MeanDeviation;
 import com.tigam.valdetectie.utils.Utils;
 
 public class BackgroundModel
@@ -16,9 +16,7 @@ public class BackgroundModel
 	
 	private CyclicArray<byte[][]> history;
 	private DynamicMedian[][] median;
-	private DynamicAverage[][] average;
-	
-	private double[][] deviation;
+	private MeanDeviation[][] diviation;
 
 	// The model:
 	private int[] m;
@@ -43,12 +41,10 @@ public class BackgroundModel
 			for( int y = 0; y < this.height; y++ )
 				this.median[x][y] = new DynamicMedian();
 		
-		this.average = new DynamicAverage[width][height];
+		this.diviation = new MeanDeviation[width][height];
 		for( int x = 0; x < this.width; x++ )
 			for( int y = 0; y < this.height; y++ )
-				this.average[x][y] = new DynamicAverage();
-		
-		this.deviation = new double[this.width][this.height];
+				this.diviation[x][y] = new MeanDeviation();
 
 		// Initialize the Model:
 		this.m = new int[this.width*this.height];
@@ -69,12 +65,13 @@ public class BackgroundModel
 
 	private Image update( byte[][] frame, byte[][] fold )
 	{
-		int size = this.history.size();
-		int pixel, index, last;
+		//int size = this.history.size();
+		int pixel;//, index, last;
 		DynamicMedian dm;
-		DynamicAverage da;
-		double median;
-		double average;
+		MeanDeviation md;
+		//double median;
+		//double mean;
+		double sd;
 		
 		BufferedImage bi = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_ARGB);
 		
@@ -89,38 +86,31 @@ public class BackgroundModel
 				if( fold != null )
 					dm.remove(fold[x][y] & 0xFF);
 				dm.insert(pixel);
-				median = dm.median();
+				//median = dm.median(); // Enable if needed.
 				
-				// Calculate Average:
-		        da = this.average[x][y];
+				// Calculate Mean and Standard Deviation:
+		        md = this.diviation[x][y];
 				if( fold != null )
-					da.remove(fold[x][y] & 0xFF);
-				da.insert( pixel );
-				average = da.average();
-				
-				// Calculate Standard Deviation:
-//				deviation[x][y] = 0;
-//				for( int k = 0; k < size; k++ )
-//				{
-//					double diff = this.history.get(k)[x][y] - average;
-//					deviation[x][y] += diff*diff;
-//				}
-//				deviation[x][y] = sqrt( deviation[x][y] / size-1 );
+					md.remove(fold[x][y] & 0xFF);
+				md.insert( pixel );
+				//mean = md.mean(); // Enable if needed.
+				sd = md.deviation();
 				
 //				last = 1;
-//				index = y*this.width+x;
+//				index = x*this.height+y;
 //				for( int k = 1; k < size; k++ )
 //				{
 //					pixel = this.history.get(k)[x][y] & 0xFF;
-//					if( !( pixel - median <= 2 * deviation[x][y] )) 
+//					if( !( pixel - median <= 2 * sd )) 
 //						continue;
 //					m[index] = min( m[index], pixel );
 //					n[index] = max( n[index], pixel );
 //					d[index] = max( d[index], pixel-this.history.get(k-1)[x][y] );
 //					last = k;
 //				}
-				
-				int value =(int) (median+average)/2;
+//				
+//				int value =(int) (m[index]+n[index]+d[index])/2;
+				int value = (int)sd;
 				int rgb = (int)(0xFF000000 | (value&0xff) | ((value&0xff) << 8) | ((value&0xff) << 16));
 				bi.setRGB(x, y, rgb);
 				
