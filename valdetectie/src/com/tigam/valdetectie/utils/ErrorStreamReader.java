@@ -9,25 +9,49 @@ public class ErrorStreamReader extends Thread
 {
 
 	private final BufferedReader reader;
+	private final boolean verbose;
 
 	public ErrorStreamReader(InputStream in)
 	{
+		this( in, true );
+	}
+	
+	public ErrorStreamReader(InputStream in, boolean verbose)
+	{
 		reader = new BufferedReader(new InputStreamReader(in));
+		this.verbose = verbose;
 		setDaemon(true);
 	}
 
 	public void run()
 	{
-		while( !isInterrupted() )
+		if( verbose )
 		{
-			try
+			while( !isInterrupted() )
 			{
-				System.err.println(reader.readLine());
-
-			} catch( IOException e )
+				try
+				{
+					System.err.println(reader.readLine());
+	
+				} catch( IOException e )
+				{
+					e.printStackTrace();
+					break;
+				}
+			}
+		}
+		else
+		{
+			while( !isInterrupted() )
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try
+                {
+	                reader.readLine();
+                }
+                catch( IOException e )
+                {
+	                break;
+                }
 			}
 		}
 	}
