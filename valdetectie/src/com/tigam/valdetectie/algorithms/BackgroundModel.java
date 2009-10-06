@@ -1,13 +1,12 @@
 package com.tigam.valdetectie.algorithms;
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 import com.tigam.valdetectie.utils.CyclicArray;
 import com.tigam.valdetectie.utils.DynamicMedian;
 import com.tigam.valdetectie.utils.MeanDeviation;
-import com.tigam.valdetectie.utils.Utils;
 
 public class BackgroundModel
 {
@@ -59,15 +58,19 @@ public class BackgroundModel
 		
 	}
 
-	private int[] update( int[] frame, int[] fold )
+	private int[] update( int[] data, int[] fold )
 	{
-		int pixel;//, index, last;
-		
+		final int size = this.history.size();
 		int[] buffer = new int[this.length];
+
+		Arrays.fill(this.m, Integer.MAX_VALUE);
+		Arrays.fill(this.n, Integer.MIN_VALUE);
+		Arrays.fill(this.d, Integer.MIN_VALUE);
 
 		for( int i = 0; i < this.length; i++ )
 		{
-			pixel = frame[i] & 0xFF;
+			int pixel;
+			pixel = data[i] & 0xFF;
 			
 			// Calculate Median:
 			if( fold != null )
@@ -78,25 +81,33 @@ public class BackgroundModel
 			if( fold != null )
 				this.diviation[i].remove(fold[i] & 0xFF);
 			this.diviation[i].insert( pixel );
-			
-//			last = 1;
-//			index = x*this.height+y;
-//			for( int k = 1; k < size; k++ )
-//			{
-//				pixel = this.history.get(k)[x][y] & 0xFF;
-//				if( !( pixel - median <= 2 * sd )) 
-//					continue;
-//				m[index] = min( m[index], pixel );
-//				n[index] = max( n[index], pixel );
-//				d[index] = max( d[index], pixel-this.history.get(k-1)[x][y] );
-//				last = k;
-//			}
-//			
-//			int value =(int) (m[index]+n[index]+d[index])/2;
-			
+
 			buffer[i] = (int)this.diviation[i].deviation();
 			buffer[i] = 0xFF000000 | buffer[i] << 16 | buffer[i] << 8 | buffer[i];
 		}
+		
+		for( int k = 1; k < size; k++ )
+		{
+			
+			int frame[] = this.history.get(k);
+			int prev[] = this.history.get(k-1);
+			for( int i = 0; i < this.length; i++ )
+			{
+				int pixel = frame[i] & 0xFF;
+
+				double q = pixel - this.median[i].median();
+				q /= 2.0;
+				q = q*q;
+				
+				if( q <= this.diviation[i].deviationSquared() )
+				{
+					m[i] = min( m[i], pixel );
+					n[i] = max( n[i], pixel );
+					d[i] = max( d[i], pixel-(prev[i]&0xFF) );
+				}	
+			}
+		}
+		
 		return buffer;
 	}
 	

@@ -18,6 +18,9 @@ public class MeanDeviation
 	private int squared;
 	private int count;
 	
+	private double deviationSquared;
+	private double deviation;
+	
 	/**
 	 * Build a {@link MeanDeviation} instance with a pre given list.
 	 * @param list The list to insert.
@@ -38,6 +41,8 @@ public class MeanDeviation
 	 */
 	public MeanDeviation()
 	{
+		this.deviationSquared = -1;
+		this.deviation = -1;
 		this.sum = 0;
 		this.squared = 0;
 		this.count = 0;
@@ -53,6 +58,8 @@ public class MeanDeviation
 		this.sum += value;
 		this.squared += value*value;
 		this.count++;
+		this.deviationSquared = -1;
+		this.deviation = -1;
 	}
 	
 	/**
@@ -67,6 +74,8 @@ public class MeanDeviation
 		this.sum -= value;
 		this.squared -= value*value;
 		this.count--;
+		this.deviationSquared = -1;
+		this.deviation = -1;
 	}
 	
 	/**
@@ -76,7 +85,16 @@ public class MeanDeviation
 	 */
 	public double deviation()
 	{
-		return sqrt( (this.squared - ( this.sum * this.mean() )) / ( this.count -1 ) );
+		if (this.deviation < 0)
+			this.deviation = sqrt( deviationSquared() );
+		return this.deviation;
+	}
+	
+	public double deviationSquared()
+	{
+		if (this.deviationSquared < 0)
+			this.deviationSquared = (this.squared - ( this.sum * this.mean() )) / ( this.count -1 );
+		return this.deviationSquared;
 	}
 
 	/**

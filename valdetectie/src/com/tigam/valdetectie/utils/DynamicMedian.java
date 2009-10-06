@@ -35,9 +35,10 @@ public class DynamicMedian
 	 */
 	public int median()
 	{
-		int c = 0, p = (this.count/2)+1;
 		if( this.median >= 0 )
 			return this.median;
+		
+		int c = 0, p = (this.count/2)+1;
 
 		for( int i = 0; i <this.values.length; i++ )
 		{
