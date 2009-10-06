@@ -1,6 +1,6 @@
 package com.tigam.valdetectie.streams;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 import com.tigam.valdetectie.streams.filters.GrayScaleImageStream;
 import com.tigam.valdetectie.tools.ImageStreamServer;
 import com.tigam.valdetectie.utils.Imager;
+import com.tigam.valdetectie.utils.Utils;
 
 /**
  * This is a network implementation of {@link ImageStream} that connects to
@@ -22,6 +23,9 @@ public class NetworkImageStream implements ImageStream
 {
 	private Socket s;
 	private InputStream in;
+
+	private int width;
+	private int height;
 	
 	public NetworkImageStream( String host )
 		throws UnknownHostException, IOException
@@ -36,16 +40,35 @@ public class NetworkImageStream implements ImageStream
 		in = s.getInputStream();
 	}
 
-	public Image read()
+	public int[] read()
 	{
 		try {
-			return ImageIO.read( in );
+			BufferedImage img = ImageIO.read( in );
+			if( width == 0 )
+			{
+				this.width = img.getWidth();
+				this.height = img.getHeight();
+			}
+			return Utils.image2data(img);
 		} catch (IOException e)	{
 			System.out.println( e ); 
 			return null;
 		}
 	}
 
+	@Override
+	public int width()
+	{
+		if (this.width == 0) throw new RuntimeException("Can't get width before the first read.");
+		return this.width;
+	}
+	
+	@Override
+	public int height()
+	{
+		if (this.height == 0) throw new RuntimeException("Can't get height before the first read.");
+		return this.height;
+	}
 
 	/**
 	 * This is a simple test main that connects to the given host and displays the frame in 
@@ -78,10 +101,10 @@ public class NetworkImageStream implements ImageStream
 		Imager imager = new Imager();
 		imager.setVisible(true);
 		while (true){
-			Image img = cam.read();
+			int[] img = cam.read();
 			if (img == null)
 				break;
-			imager.setImage(img);
+			imager.setImage(Utils.data2image(img,cam.width(), cam.height()));
 		}
 		try
 		{

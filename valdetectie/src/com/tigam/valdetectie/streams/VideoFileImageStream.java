@@ -1,6 +1,5 @@
 package com.tigam.valdetectie.streams;
 
-import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,16 +17,19 @@ public class VideoFileImageStream implements ImageStream
 	public final File file;
 
 	private InputStream in;
+	private final int width;
+	private final int height;
 	
 	public VideoFileImageStream(File file) throws ImageStreamException, IOException
 	{
-		this (file, 1024, 768);
+		this (file, 320, 240);
 	}
 
 	public VideoFileImageStream(File file, int width, int height) throws ImageStreamException, IOException
 	{
-
 		this.file = file;
+		this.width = width;
+		this.height = height;
 
 		if( !file.exists() )
 			throw new IOException("No such file or directory.");
@@ -50,15 +52,27 @@ public class VideoFileImageStream implements ImageStream
 	}
 
 	@Override
-	public synchronized Image read()
+	public synchronized int[] read()
 	{
 		try
 		{
-			return ImageIO.read(this.in);
+			return ImageIO.read(this.in).getRGB(0, 0, this.width, this.height, null, 0, this.width);
 		} catch( IOException e )
 		{
 			return null;
 		}
+	}
+
+	@Override
+	public int width()
+	{
+		return this.width;
+	}
+	
+	@Override
+	public int height()
+	{
+		return this.height;
 	}
 
 }

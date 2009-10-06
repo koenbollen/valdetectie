@@ -51,4 +51,11 @@ public class Utils
 		}
 		return bi.getRGB(0, 0, w, h, null, 0, w);
 	}
+
+	public static BufferedImage data2image( int[] data, int width, int height )
+	{
+		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		img.setRGB(0, 0, width, height, data, 0, width);
+		return img;
+	}
 }

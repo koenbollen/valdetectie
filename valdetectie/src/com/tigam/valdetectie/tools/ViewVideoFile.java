@@ -1,6 +1,5 @@
 package com.tigam.valdetectie.tools;
 
-import java.awt.Image;
 import java.io.File;
 
 import javax.swing.JFileChooser;
@@ -8,6 +7,7 @@ import javax.swing.JFileChooser;
 import com.tigam.valdetectie.streams.ImageStream;
 import com.tigam.valdetectie.streams.VideoFileImageStream;
 import com.tigam.valdetectie.utils.Imager;
+import com.tigam.valdetectie.utils.Utils;
 
 /**
  * This class is a simple tool that opens a file as a 
@@ -48,10 +48,10 @@ public class ViewVideoFile
 		imager.setTitle( "Viewing file: " + file.getName() );
 		imager.setVisible(true);
 		while (true){
-			Image img = str.read();
+			int[] img = str.read();
 			if (img == null)
 				break;
-			imager.setImage(img);
+			imager.setImage(Utils.data2image(img, str.width(), str.height()));
 		}
 		System.exit(0);
 	}

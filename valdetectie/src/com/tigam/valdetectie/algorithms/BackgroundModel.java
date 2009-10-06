@@ -52,14 +52,13 @@ public class BackgroundModel
 		this.d = new int[this.width*this.height];
 	}
 	
-	public Image pushImage( Image image )
+	public int[] pushImage( int[] data )
 	{
-		int data[] = Utils.image2data(image);
 		byte frame[][] = new byte[this.width][this.height];
 		for( int i = 0; i < data.length; i++ )
 			frame[i%this.width][i/this.width] = (byte)(data[i] & 0xFF);
 		byte[][] old = this.history.insert(frame);		
-		return update(frame, old);
+		return Utils.image2data(update(frame, old));
 		
 	}
 

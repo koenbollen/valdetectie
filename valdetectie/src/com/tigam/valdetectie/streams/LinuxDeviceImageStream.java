@@ -1,6 +1,5 @@
 package com.tigam.valdetectie.streams;
 
-import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -89,7 +88,7 @@ public class LinuxDeviceImageStream implements ImageStream
 			String command = "ffmpeg -v 0 -f video4linux2 -s "+resolution+" -i " + this.device + " -r "+rate+" -s "+resolution+" -f image2pipe -vcodec bmp -";
 			
 			Process cam = Runtime.getRuntime().exec(command);
-			(new ErrorStreamReader(cam.getErrorStream())).start();
+			(new ErrorStreamReader(cam.getErrorStream(),false)).start();
 			in = cam.getInputStream();
 		} catch (IOException ball){
 			throw new ImageStreamException( "Unable to start ffmpeg.", ball );
@@ -101,13 +100,24 @@ public class LinuxDeviceImageStream implements ImageStream
 	}
 	
 	@Override
-	public synchronized Image read()
+	public synchronized int[] read()
 	{
 		try {
-			return ImageIO.read(this.imageInput);
+			return ImageIO.read(this.imageInput).getRGB(0, 0, this.width, this.height, null, 0, this.width);
 		} catch (IOException e)	{
 			return null;
 		}
 	}
 
+	@Override
+	public int width()
+	{
+		return this.width;
+	}
+	
+	@Override
+	public int height()
+	{
+		return this.height;
+	}
 }

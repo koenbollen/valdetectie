@@ -1,9 +1,5 @@
 package com.tigam.valdetectie.streams.filters;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-
 import com.tigam.valdetectie.streams.ImageStream;
 
 /**
@@ -15,13 +11,14 @@ import com.tigam.valdetectie.streams.ImageStream;
 public class MirrorImageStream implements ImageStream
 {
 	private final ImageStream stream;
-	private BufferedImage buffer;
-	private Graphics2D graphics;
+
+	private final int width;
+	private final int height;
 	
 	public MirrorImageStream(ImageStream stream){
 		this.stream = stream;
-		this.buffer = null;
-		this.graphics = null;
+		this.width = stream.width();
+		this.height = stream.height();
 	}
 	
 	/**
@@ -30,32 +27,25 @@ public class MirrorImageStream implements ImageStream
 	 * @return The next image.
 	 */
 	@Override
-	public Image read()
+	public int[] read()
 	{
-		Image img = this.stream.read();
-		if (img == null)
-		{
-			if( this.graphics != null )
-				this.graphics.dispose();
-			this.buffer = null;
-			this.graphics = null;
-			return null;
-		}
-
-		if( this.buffer == null )
-		{
-			int w = img.getWidth( null );
-			int h = img.getHeight( null );
-			this.buffer = new BufferedImage( w, h, BufferedImage.TYPE_4BYTE_ABGR );
-			this.graphics = (Graphics2D)this.buffer.getGraphics();
-			this.graphics.translate( w/2, 0 );
-			this.graphics.scale(-1,1);
-			this.graphics.translate( -(w/2), 0 );
-		}
-		
-		this.graphics.drawImage( img, 0, 0, null );
-		
-		return this.buffer;
+		int[] orig = this.stream.read();
+		int[] img = new int[orig.length];
+		for( int y = 0; y < this.height; y++ )
+			for( int x = 0; x < this.width; x++ )
+				img[ y * this.width + this.width-x-1 ] = orig[ y * this.width + x ];
+		return img;
 	}
 
+	@Override
+	public int width()
+	{
+		return this.width;
+	}
+	
+	@Override
+	public int height()
+	{
+		return this.height;
+	}
 }

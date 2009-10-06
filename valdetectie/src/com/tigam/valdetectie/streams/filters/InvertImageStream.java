@@ -1,10 +1,5 @@
 package com.tigam.valdetectie.streams.filters;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.ByteLookupTable;
-import java.awt.image.LookupOp;
-
 import com.tigam.valdetectie.streams.ImageStream;
 
 /**
@@ -17,8 +12,10 @@ import com.tigam.valdetectie.streams.ImageStream;
 public class InvertImageStream implements ImageStream
 {
 	private final ImageStream stream;
-	private final LookupOp lop;
 
+	private final int width;
+	private final int height;
+	
 	/**
 	 * Create a wrapper for an {@link ImageStream} that inverts it.
 	 * @param stream
@@ -26,10 +23,8 @@ public class InvertImageStream implements ImageStream
 	public InvertImageStream( ImageStream stream )
 	{
 		this.stream = stream;
-		byte[] bytes = new byte[256];
-	    for( int i = 0; i < 256; i++ )
-	    	bytes[i] = (byte)( 255 - i );
-		lop = new LookupOp( new ByteLookupTable( 0, bytes ), null );
+		this.width = stream.width();
+		this.height = stream.height();
 	}
 	
 	/**
@@ -38,13 +33,23 @@ public class InvertImageStream implements ImageStream
 	 * @return The next image.
 	 */
 	@Override
-	public Image read()
+	public int[] read()
 	{
-		BufferedImage img = (BufferedImage)this.stream.read();
-		if( img == null )
-			return null;
-		lop.filter( img, img );		
+		int[] img = this.stream.read();
+		for( int i = 0; i < img.length; i++ )
+			img[i] ^= 0x00FFFFFF;
 		return img;
 	}
 
+	@Override
+	public int width()
+	{
+		return this.width;
+	}
+	
+	@Override
+	public int height()
+	{
+		return this.height;
+	}
 }

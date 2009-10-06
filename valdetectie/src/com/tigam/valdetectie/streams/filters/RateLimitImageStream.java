@@ -1,10 +1,8 @@
 package com.tigam.valdetectie.streams.filters;
 
-import java.awt.Image;
+import static java.lang.Math.max;
 
 import com.tigam.valdetectie.streams.ImageStream;
-
-import static java.lang.Math.*;
 
 /**
  * RateLimitImageStream.
@@ -29,6 +27,8 @@ public class RateLimitImageStream implements ImageStream
 	public static final int DEFAULT_RATE = 24;
 	
 	private final ImageStream stream;
+	private final int width;
+	private final int height;
 	private final int rate;
 	private final long delay;
 	
@@ -55,6 +55,8 @@ public class RateLimitImageStream implements ImageStream
 	public RateLimitImageStream( ImageStream stream, int rate )
 	{
 		this.stream = stream;
+		this.width = stream.width();
+		this.height = stream.height();
 		this.rate = max( 1, rate );
 		this.delay = 1000/this.rate;
 		
@@ -66,9 +68,9 @@ public class RateLimitImageStream implements ImageStream
 	 * of milliseconds to keep the framerate leveled and synced.
 	 */
 	@Override
-	public Image read()
+	public int[] read()
 	{
-		Image img = this.stream.read();
+		int[] img = this.stream.read();
 		if( img == null )
 			return null;
 		
@@ -97,6 +99,18 @@ public class RateLimitImageStream implements ImageStream
 		this.last = now;
 		
 		return img;
+	}
+
+	@Override
+	public int width()
+	{
+		return this.width;
+	}
+	
+	@Override
+	public int height()
+	{
+		return this.height;
 	}
 	
 	/**

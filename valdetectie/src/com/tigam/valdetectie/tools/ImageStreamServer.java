@@ -20,6 +20,7 @@ import com.tigam.valdetectie.streams.ImageStream;
 import com.tigam.valdetectie.streams.LinuxDeviceImageStream;
 import com.tigam.valdetectie.streams.NetworkImageStream;
 import com.tigam.valdetectie.streams.filters.GrayScaleImageStream;
+import com.tigam.valdetectie.utils.Utils;
 
 
 /**
@@ -173,7 +174,7 @@ public final class ImageStreamServer
 			while(!isInterrupted()){
 				try
 				{
-					Image img = this.stream.read();
+					Image img = Utils.data2image(this.stream.read(), this.stream.width(), this.stream.height());
 					if (img == null) break;
 					this.queue.offer(img, 10, TimeUnit.MILLISECONDS);
 				} catch( InterruptedException e )
@@ -210,15 +211,19 @@ public final class ImageStreamServer
 	
 	public static void main(String ... args){
 		int port = DEFAULT_PORT;
+		int rate = 12;
 		boolean grayscale = false;
 		boolean gzipped = false;
 		
 		for (int i = 0; i<args.length; i++){
 			if (args[i].equalsIgnoreCase("-help")){
-				System.out.println("WebcamServer [-p portnumber] [-gray] [-gzip]");
+				System.out.println("WebcamServer [-p portnumber] [-rate #] [-gray]");
 				System.out.println();
 				System.out.println(" -p portnumeber");
 				System.out.println("    the portnumber to listen on with the server");
+				System.out.println();
+				System.out.println(" -rate");
+				System.out.println("    set the framerate of the imagestream (default: 12)");
 				System.out.println();
 				System.out.println(" -gray");
 				System.out.println("    if this flag is set the server will stream in grayscale");
@@ -231,6 +236,13 @@ public final class ImageStreamServer
 				} catch (IndexOutOfBoundsException ball){
 				} catch (NumberFormatException ball){
 				}				
+			} else if (args[i].equalsIgnoreCase("-rate")){
+				i++;
+				try {
+					rate = Integer.parseInt(args[i]);
+				} catch (IndexOutOfBoundsException ball){
+				} catch (NumberFormatException ball){
+				}				
 			} else if (args[i].equalsIgnoreCase("-gray")){
 				grayscale = true;
 			}
@@ -238,7 +250,7 @@ public final class ImageStreamServer
 		
 		try
 		{
-			ImageStream imgStream = new LinuxDeviceImageStream(320,240);
+			ImageStream imgStream = new LinuxDeviceImageStream(320,240,rate);
 			if (grayscale) imgStream = new GrayScaleImageStream(imgStream);
 			(new ImageStreamServer(imgStream,port)).start();
 			System.out.println( "ImageStreamServer listening on port " + port );

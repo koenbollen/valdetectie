@@ -1,9 +1,5 @@
 package com.tigam.valdetectie.streams.filters;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-
 import com.tigam.valdetectie.streams.ImageStream;
 
 /**
@@ -14,38 +10,36 @@ import com.tigam.valdetectie.streams.ImageStream;
 public class GrayScaleImageStream implements ImageStream
 {
 	private final ImageStream stream;
-	private BufferedImage image;
-	private Graphics graphics;
+
+	private final int width;
+	private final int height;
 	
 	public GrayScaleImageStream(ImageStream stream){
 		this.stream = stream;
-		image = null;
-		graphics = null;
+		this.width = stream.width();
+		this.height = stream.height();
 	}
 	
-	public synchronized Image read()
+	public int[] read()
 	{
-		Image img = this.stream.read();
-		if (img == null){
-			if( image != null )
-				image = null;
-			if( graphics != null )
-			{
-				graphics.dispose();
-				graphics = null;
-			}
-			return null;
-		}
-		
-		if (image == null) 
+		int[] img = this.stream.read();
+		for( int i = 0; i < img.length; i++ )
 		{
-			image = new BufferedImage( img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_BYTE_GRAY );
-			graphics = image.getGraphics();
+			int g = ( (img[i]>>16&0xff)+(img[i]>>8&0xff)+(img[i]&0xff) ) / 3;
+			img[i] =  0xff000000 | g << 16 | g << 8 | g;
 		}
-		
-		graphics.drawImage(img, 0, 0, null);
-		
-		return image;
+		return img;
 	}
 
+	@Override
+	public int width()
+	{
+		return this.width;
+	}
+	
+	@Override
+	public int height()
+	{
+		return this.height;
+	}
 }
