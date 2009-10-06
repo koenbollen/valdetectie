@@ -1,5 +1,6 @@
 package com.tigam.valdetectie.streams;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -103,7 +104,10 @@ public class LinuxDeviceImageStream implements ImageStream
 	public synchronized int[] read()
 	{
 		try {
-			return ImageIO.read(this.imageInput).getRGB(0, 0, this.width, this.height, null, 0, this.width);
+			BufferedImage img = ImageIO.read(this.imageInput);
+			if( img == null )
+				return null;
+			return img.getRGB(0, 0, this.width, this.height, null, 0, this.width);
 		} catch (IOException e)	{
 			return null;
 		}

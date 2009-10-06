@@ -30,6 +30,8 @@ public class MirrorImageStream implements ImageStream
 	public int[] read()
 	{
 		int[] orig = this.stream.read();
+		if( orig == null )
+			return null;
 		int[] img = new int[orig.length];
 		for( int y = 0; y < this.height; y++ )
 			for( int x = 0; x < this.width; x++ )

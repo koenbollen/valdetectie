@@ -36,6 +36,8 @@ public class InvertImageStream implements ImageStream
 	public int[] read()
 	{
 		int[] img = this.stream.read();
+		if( img == null )
+			return null;
 		for( int i = 0; i < img.length; i++ )
 			img[i] ^= 0x00FFFFFF;
 		return img;

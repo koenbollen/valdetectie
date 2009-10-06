@@ -1,5 +1,6 @@
 package com.tigam.valdetectie.streams;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +57,10 @@ public class VideoFileImageStream implements ImageStream
 	{
 		try
 		{
-			return ImageIO.read(this.in).getRGB(0, 0, this.width, this.height, null, 0, this.width);
+			BufferedImage img = ImageIO.read(this.in);
+			if( img == null )
+				return null;
+			return img.getRGB(0, 0, this.width, this.height, null, 0, this.width);
 		} catch( IOException e )
 		{
 			return null;
