@@ -4,9 +4,9 @@ import static java.lang.Math.min;
 
 import java.util.Arrays;
 
-import com.tigam.valdetectie.utils.CyclicArray;
 import com.tigam.valdetectie.utils.DynamicMedian;
 import com.tigam.valdetectie.utils.MeanDeviation;
+import com.tigam.valdetectie.utils.PixelHistory;
 
 public class BackgroundModel
 {
@@ -14,7 +14,8 @@ public class BackgroundModel
 	private final int height;
 	private final int length;
 	
-	private CyclicArray<int[]> history;
+	private PixelHistory ph;
+	
 	private DynamicMedian[] median;
 	private MeanDeviation[] diviation;
 
@@ -35,7 +36,7 @@ public class BackgroundModel
 		this.length = width*height;
 		
 		period = max(1, period%2==0 ? period-1 : period ); 
-		history = new CyclicArray<int[]>( period );
+		ph = new PixelHistory(period, this.length);
 
 		this.median = new DynamicMedian[this.length];
 		this.diviation = new MeanDeviation[this.length];
@@ -53,14 +54,14 @@ public class BackgroundModel
 	
 	public int[] pushImage( int[] frame )
 	{
-		int[] old = this.history.insert(frame);		
+		int[] old = ph.insert(frame);//this.history.insert(frame);		
 		return update(frame, old);
 		
 	}
 
 	private int[] update( int[] data, int[] fold )
 	{
-		final int size = this.history.size();
+		
 		int[] buffer = new int[this.length];
 
 		Arrays.fill(this.m, Integer.MAX_VALUE);
@@ -86,28 +87,25 @@ public class BackgroundModel
 			buffer[i] = 0xFF000000 | buffer[i] << 16 | buffer[i] << 8 | buffer[i];
 		}
 		
-		for( int k = 1; k < size; k++ )
+		for( int i = 0; i < this.length; i++ )
 		{
-			
-			int frame[] = this.history.get(k);
-			int prev[] = this.history.get(k-1);
-			for( int i = 0; i < this.length; i++ )
+			int [] pixelHistory = ph.getPixelHistory(i);
+			for( int k = 1; k < pixelHistory.length; k++ )
 			{
-				int pixel = frame[i] & 0xFF;
+				int pixelData = pixelHistory[k] & 0xFF;
 
-				double q = pixel - this.median[i].median();
+				double q = pixelData - this.median[i].median();
 				q /= 2.0;
 				q = q*q;
 				
 				if( q <= this.diviation[i].deviationSquared() )
 				{
-					m[i] = min( m[i], pixel );
-					n[i] = max( n[i], pixel );
-					d[i] = max( d[i], pixel-(prev[i]&0xFF) );
-				}	
+					m[i] = min( m[i], pixelData );
+					n[i] = max( n[i], pixelData );
+					d[i] = max( d[i], Math.abs(pixelData-(pixelHistory[k-1]&0xFF)) );
+				}
 			}
-		}
-		
+		}		
 		return buffer;
 	}
 	
