@@ -13,10 +13,11 @@ public class BackgroundModel
 {
 	private final int width;
 	private final int height;
+	private final int length;
 	
-	private CyclicArray<byte[][]> history;
-	private DynamicMedian[][] median;
-	private MeanDeviation[][] diviation;
+	private CyclicArray<int[]> history;
+	private DynamicMedian[] median;
+	private MeanDeviation[] diviation;
 
 	// The model:
 	private int[] m;
@@ -30,92 +31,73 @@ public class BackgroundModel
 	
 	public BackgroundModel( int width, int height, int period )
 	{
-		this.width = max(1,width);
-		this.height = max(1,height);
+		this.width = width;
+		this.height = height;
+		this.length = width*height;
 		
 		period = max(1, period%2==0 ? period-1 : period ); 
-		history = new CyclicArray<byte[][]>( period );
+		history = new CyclicArray<int[]>( period );
 
-		this.median = new DynamicMedian[width][height];
-		for( int x = 0; x < this.width; x++ )
-			for( int y = 0; y < this.height; y++ )
-				this.median[x][y] = new DynamicMedian();
+		this.median = new DynamicMedian[this.length];
+		this.diviation = new MeanDeviation[this.length];
+		for( int i = 0; i < this.length; i++ )
+		{
+			this.median[i] = new DynamicMedian();
+			this.diviation[i] = new MeanDeviation();
+		}
 		
-		this.diviation = new MeanDeviation[width][height];
-		for( int x = 0; x < this.width; x++ )
-			for( int y = 0; y < this.height; y++ )
-				this.diviation[x][y] = new MeanDeviation();
-
 		// Initialize the Model:
-		this.m = new int[this.width*this.height];
-		this.n = new int[this.width*this.height];
-		this.d = new int[this.width*this.height];
+		this.m = new int[this.length];
+		this.n = new int[this.length];
+		this.d = new int[this.length];
 	}
 	
-	public int[] pushImage( int[] data )
+	public int[] pushImage( int[] frame )
 	{
-		byte frame[][] = new byte[this.width][this.height];
-		for( int i = 0; i < data.length; i++ )
-			frame[i%this.width][i/this.width] = (byte)(data[i] & 0xFF);
-		byte[][] old = this.history.insert(frame);		
-		return Utils.image2data(update(frame, old));
+		int[] old = this.history.insert(frame);		
+		return update(frame, old);
 		
 	}
 
-	private Image update( byte[][] frame, byte[][] fold )
+	private int[] update( int[] frame, int[] fold )
 	{
-		//int size = this.history.size();
 		int pixel;//, index, last;
-		DynamicMedian dm;
-		MeanDeviation md;
-		//double median;
-		//double mean;
-		double sd;
 		
-		BufferedImage bi = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_ARGB);
-		
-		for( int x = 0; x < this.width; x++ )
+		int[] buffer = new int[this.length];
+
+		for( int i = 0; i < this.length; i++ )
 		{
-			for( int y = 0; y < this.height; y++ )
-			{
-				pixel = frame[x][y] & 0xFF;
-				
-				// Calculate Median:
-				dm = this.median[x][y];
-				if( fold != null )
-					dm.remove(fold[x][y] & 0xFF);
-				dm.insert(pixel);
-				//median = dm.median(); // Enable if needed.
-				
-				// Calculate Mean and Standard Deviation:
-		        md = this.diviation[x][y];
-				if( fold != null )
-					md.remove(fold[x][y] & 0xFF);
-				md.insert( pixel );
-				//mean = md.mean(); // Enable if needed.
-				sd = md.deviation();
-				
-//				last = 1;
-//				index = x*this.height+y;
-//				for( int k = 1; k < size; k++ )
-//				{
-//					pixel = this.history.get(k)[x][y] & 0xFF;
-//					if( !( pixel - median <= 2 * sd )) 
-//						continue;
-//					m[index] = min( m[index], pixel );
-//					n[index] = max( n[index], pixel );
-//					d[index] = max( d[index], pixel-this.history.get(k-1)[x][y] );
-//					last = k;
-//				}
-//				
-//				int value =(int) (m[index]+n[index]+d[index])/2;
-				int value = (int)sd;
-				int rgb = (int)(0xFF000000 | (value&0xff) | ((value&0xff) << 8) | ((value&0xff) << 16));
-				bi.setRGB(x, y, rgb);
-				
-			}
+			pixel = frame[i] & 0xFF;
+			
+			// Calculate Median:
+			if( fold != null )
+				this.median[i].remove(fold[i] & 0xFF);
+			this.median[i].insert(pixel);
+			
+			// Calculate Mean and Standard Deviation:
+			if( fold != null )
+				this.diviation[i].remove(fold[i] & 0xFF);
+			this.diviation[i].insert( pixel );
+			
+//			last = 1;
+//			index = x*this.height+y;
+//			for( int k = 1; k < size; k++ )
+//			{
+//				pixel = this.history.get(k)[x][y] & 0xFF;
+//				if( !( pixel - median <= 2 * sd )) 
+//					continue;
+//				m[index] = min( m[index], pixel );
+//				n[index] = max( n[index], pixel );
+//				d[index] = max( d[index], pixel-this.history.get(k-1)[x][y] );
+//				last = k;
+//			}
+//			
+//			int value =(int) (m[index]+n[index]+d[index])/2;
+			
+			buffer[i] = (int)this.diviation[i].deviation();
+			buffer[i] = 0xFF000000 | buffer[i] << 16 | buffer[i] << 8 | buffer[i];
 		}
-		return bi;
+		return buffer;
 	}
 	
 }
