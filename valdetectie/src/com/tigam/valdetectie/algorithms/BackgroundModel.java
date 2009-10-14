@@ -21,14 +21,14 @@ public class BackgroundModel
 
 	private DynamicMedian[] median;
 
-	private MeanDeviation[] diviation;
+	private MeanDeviation[] deviation;
 
-	// The model:
-	private int[] m;
+	// The model: TODO MAK PRIVAET!!!11!!one!!!
+	public int[] m;
 
-	private int[] n;
+	public int[] n;
 
-	private int[] d;
+	public int[] d;
 
 	public BackgroundModel(int width, int height)
 	{
@@ -45,11 +45,11 @@ public class BackgroundModel
 		ph = new PixelHistory(period, this.length);
 
 		this.median = new DynamicMedian[this.length];
-		this.diviation = new MeanDeviation[this.length];
+		this.deviation = new MeanDeviation[this.length];
 		for( int i = 0; i < this.length; i++ )
 		{
 			this.median[i] = new DynamicMedian();
-			this.diviation[i] = new MeanDeviation();
+			this.deviation[i] = new MeanDeviation();
 		}
 
 		// Initialize the Model:
@@ -75,8 +75,8 @@ public class BackgroundModel
 
 			// Calculate Mean and Standard Deviation:
 			if( old != null )
-				this.diviation[i].remove(old[i] & 0xFF);
-			this.diviation[i].insert(pixel);
+				this.deviation[i].remove(old[i] & 0xFF);
+			this.deviation[i].insert(pixel);
 		}
 	}
 	
@@ -85,7 +85,7 @@ public class BackgroundModel
 		int[] buffer = new int[this.length];
 		for( int i = 0; i < this.length; i++ )
 		{
-			buffer[i] = (int) this.diviation[i].deviation();
+			buffer[i] = (int) this.deviation[i].deviation();
 			buffer[i] = 0xFF000000 | buffer[i] << 16 | buffer[i] << 8 | buffer[i];
 		}
 		return buffer;
@@ -102,23 +102,51 @@ public class BackgroundModel
 			int[] pixelHistory = ph.getPixelHistory(i);
 
 			double median = this.median[i].median();
-			double dvs = this.diviation[i].deviationSquared();
-
-			for( int k = 1; k < size; k++ )
+			double dvs = this.deviation[i].deviationSquared();
+			double dv = this.deviation[i].deviation();
+			boolean previousGood = false;
+			
+			for( int k = 0; k < size; k++ )
 			{
 				int pixelData = pixelHistory[k] & 0xFF;
 
 				double q = pixelData - median;
-				q /= 2;
+				q /= 1;
 				q = q * q;
 
 				if( q <= dvs ){
+				//if( Math.abs( pixelData - median ) <= 2 * dv ){
 					m[i] = min(m[i], pixelData);
 					n[i] = max(n[i], pixelData);
-					d[i] = max(d[i], Math.abs(pixelData	- (pixelHistory[k - 1] & 0xFF)));
-				}
+					if (previousGood)
+						d[i] = max(d[i], Math.abs(pixelData	- (pixelHistory[k - 1] & 0xFF)));
+					previousGood = true;
+				} else previousGood = false;
 			}
 		}
+	}
+	
+	public int[] notIncludeImage( int[] image )
+	{
+		int[] data1 = new int[this.length];
+		
+		Arrays.fill(data1, 0xFF000000);
+		
+		for( int i = 0; i < this.length; i++ )
+		{
+			double median = this.median[i].median();
+			double dvs = this.deviation[i].deviationSquared();
+			
+			int p = image[i] & 0xFF;
+			double q = p - median;
+			q /= 2;
+			q = q * q;
+			
+			if( !(q <= dvs) ){
+				data1[i] = 0xFFFFFFFF;
+			}
+		}
+		return data1;
 	}
 	
 	public int[] getBackgroundImage(){
@@ -132,12 +160,12 @@ public class BackgroundModel
 	
 	public int[] getForeground(int [] image){
 		if (image.length != length) throw new RuntimeException("size of imagge does not fit the size of the background");
-		int back = 0xFF000000;
-		int fore = 0xFFFFFFFF;
+		int back = 0xFFFFFFFF;
+		int fore = 0xFF000000;
 		
 		int [] foreground = new int[length];
 		
-		Arrays.fill(foreground, fore);
+		Arrays.fill(foreground, back);
 		
 		DynamicMedian median = new DynamicMedian();
 		for (int t:d){
@@ -147,11 +175,11 @@ public class BackgroundModel
 		}
 		
 		int k = 2;
-		int u = median.median();
+		int mu = median.median();
 		
 		for (int i=0; i<length; i++){
 			int pix = image[i]&0xFF;
-			if (pix > (m[i]-k*u) && pix < (n[i]+k*u)) foreground[i] = back;
+			if (pix < (m[i]-k*mu) || pix > (n[i]+k*mu)) foreground[i] = fore;
 		}
 		
 		return foreground;

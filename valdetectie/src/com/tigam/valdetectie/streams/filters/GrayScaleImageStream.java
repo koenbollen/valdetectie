@@ -7,6 +7,7 @@ import com.tigam.valdetectie.streams.ImageStream;
  * 
  * @author Koen Bollen & Nils Dijk
  */
+@Deprecated
 public class GrayScaleImageStream implements ImageStream
 {
 	private final ImageStream stream;

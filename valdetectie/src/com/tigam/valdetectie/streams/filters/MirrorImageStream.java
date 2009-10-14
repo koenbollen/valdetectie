@@ -8,6 +8,7 @@ import com.tigam.valdetectie.streams.ImageStream;
  * @since 23 September, 2009
  * @author Koen Bollen
  */
+@Deprecated
 public class MirrorImageStream implements ImageStream
 {
 	private final ImageStream stream;

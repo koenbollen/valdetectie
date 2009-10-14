@@ -1,7 +1,9 @@
 package com.tigam.valdetectie.utils;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
@@ -57,5 +59,21 @@ public class Utils
 		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		img.setRGB(0, 0, width, height, data, 0, width);
 		return img;
+	}
+	
+	public static void PositionImagers(int width, int height, int offset, Imager...imagers ){
+		 Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		 
+		 int x = 0;
+		 int y = 0;
+		 
+		 for (Imager img:imagers){
+			 img.setLocation(x, y);
+			 y += height + offset;
+			 if (y+height > dim.height){
+				 y = 0;
+				 x += width + offset;
+			 }
+		 }
 	}
 }
