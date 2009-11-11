@@ -5,7 +5,8 @@ import java.util.Comparator;
 public class GaussianKernel
 {
 	public static final double INITIAL_DEVIATION = 128.0;
-	public static final double DEFAULT_ALPHA = .2;
+	public static final double DEFAULT_ALPHA = 1.0/1000;
+	public static final double DEFAULT_BIAS = .1;
 	
 	public static final Comparator<GaussianKernel> WEIGHTCOMPARATOR = new Comparator<GaussianKernel>()
 	{
@@ -18,7 +19,7 @@ public class GaussianKernel
 				return -1;
 			if (o1.weight == o2.weight)
 				return 0;
-			return (o1.weight - o2.weight>0)?1:-1;
+			return (o1.weight - o2.weight>0)?-1:1;
 		}
 	};
 
@@ -35,7 +36,7 @@ public class GaussianKernel
 
 	public GaussianKernel( double value, double alpha )
 	{
-		this(value, alpha, 0.0 );
+		this(value, alpha, DEFAULT_BIAS );
 	}
 
 	public GaussianKernel( double value, double alpha, double bias )
@@ -62,6 +63,7 @@ public class GaussianKernel
 		weight += alpha * ( 1 - weight - bias );
 		double delta = value - mean;
 		mean += alpha / weight * delta;
+		//mean = mean * (1.0-alpha) + alpha * delta;
 		variance += alpha / weight * (delta*delta-variance);
 	}
 	
@@ -72,7 +74,8 @@ public class GaussianKernel
 	
 	public boolean contains( double value, int mahalanobis )
 	{
-		return ( Math.abs(mean-value) <= (variance * mahalanobis) ); 
+		double delta = mean-value;
+		return ( ( delta * delta ) <= (variance * mahalanobis) ); 
 	}
 
 	public double getWeight()
@@ -88,6 +91,14 @@ public class GaussianKernel
 	public double getVariance()
 	{
 		return variance;
+	}
+
+	public void normalize(double total)
+	{
+		if( total == 0.0 )
+			this.weight = 1;
+		else
+			this.weight = this.weight / total;
 	}
 
 }
