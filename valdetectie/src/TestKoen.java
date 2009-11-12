@@ -5,6 +5,7 @@ import com.tigam.valdetectie.streams.ImageFilterStream;
 import com.tigam.valdetectie.streams.ImageStream;
 import com.tigam.valdetectie.streams.LinuxDeviceImageStream;
 import com.tigam.valdetectie.streams.VideoFileImageStream;
+import com.tigam.valdetectie.streams.filters.ErodeDilateFilter;
 import com.tigam.valdetectie.streams.filters.GrayScaleFilter;
 import com.tigam.valdetectie.utils.Imager;
 import com.tigam.valdetectie.utils.Utils;
@@ -20,13 +21,17 @@ public class TestKoen
 		VideoFileImageStream x;
 		LinuxDeviceImageStream x2;
 		//*/
-		//ImageStream in = new VideoFileImageStream( new File( "/home/public/hall_monitor.mpg" ), 320, 240 );
-		ImageStream in = new LinuxDeviceImageStream(320, 240);
+		ImageStream in = new VideoFileImageStream( new File( "/home/public/hall_monitor.mpg" ), 320, 240 );
+		//ImageStream in = new LinuxDeviceImageStream(320, 240);
+		
+		//ImageStream in = new VideoFileImageStream( new File( "/home/seigi/.workspace/valdetectie/src/hall_monitor.mpg" ), 320, 240 );
+		
+
 
 		in = new ImageFilterStream(in, GrayScaleFilter.instance);
 		//in = new RateLimitImageStream(in, 24);
 
-		Imager[] imgs = new Imager[4];
+		Imager[] imgs = new Imager[5];
 		for( int i = 0; i < imgs.length; i++ )
 		{
 			imgs[i] = new Imager();
@@ -48,8 +53,10 @@ public class TestKoen
 			imgs[1].setImage( Utils.data2image(img2, in.width(), in.height()) );
 			img2 = model.getKernelCountImage();
 			imgs[2].setImage( Utils.data2image(img2, in.width(), in.height()) );
-			img2 = model.foreground(img);
+			img2 = model.foreground(img);			
 			imgs[3].setImage( Utils.data2image(img2, in.width(), in.height()) );
+			img2 = ErodeDilateFilter.instance.applyFilter(img2, in.width(), in.height());
+			imgs[4].setImage( Utils.data2image(img2, in.width(), in.height()) );
 		}
 		imgs[0].setImage(null);
 		
