@@ -27,9 +27,15 @@ public class ErodeDilateFilter implements ImageFilter
 		if( img == null )
 			return null;
 		
+		/*
 		erode(img, width, height, this.intensity);
 		dilate(img, width, height, this.intensity * 2);
 		erode(img, width, height, this.intensity);
+		//*/
+		
+		dilate(img, width, height, this.intensity);
+		erode(img, width, height, this.intensity * 2);
+		dilate(img, width, height, this.intensity);
 		
 		return img;
 	}
