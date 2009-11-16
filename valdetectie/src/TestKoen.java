@@ -22,7 +22,8 @@ public class TestKoen
 		LinuxDeviceImageStream x2;
 		//*/
 		ImageStream in = new VideoFileImageStream( new File( "/home/public/hall_monitor.mpg" ), 320, 240 );
-		//ImageStream in = new LinuxDeviceImageStream(320, 240);
+		//ImageStream in = new VideoFileImageStream( new File( "/home/public/hall_monitor.mpg" ), 320/2, 240/2 );
+		//ImageStream in = new LinuxDeviceImageStream(320/2, 240/2);
 		
 		//ImageStream in = new VideoFileImageStream( new File( "/home/seigi/.workspace/valdetectie/src/hall_monitor.mpg" ), 320, 240 );
 		
@@ -41,7 +42,7 @@ public class TestKoen
 		
 		Utils.PositionImagers(in.width(), in.height(), 50, imgs);
 
-		GaussianModel model = new GaussianModel(320, 240);
+		GaussianModel model = new GaussianModel(in.width(), in.height(), 8, 1/3000.0);
 
 		int[] img;
 		int[] img2;

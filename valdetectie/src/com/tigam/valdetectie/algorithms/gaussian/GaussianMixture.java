@@ -5,13 +5,19 @@ import java.util.Arrays;
 public class GaussianMixture
 {
 	public static final int MAHALANOBIS = 2;
-	
+
 	private final int number_of_kernels;
+	private final double alpha;
 	private GaussianKernel[] kernels;
-	
+
 	public GaussianMixture( int number_of_kernels )
 	{
+		this( number_of_kernels, GaussianKernel.DEFAULT_ALPHA );
+	}
+	public GaussianMixture( int number_of_kernels, double alpha )
+	{
 		this.number_of_kernels = number_of_kernels;
+		this.alpha = alpha;
 		this.kernels = new GaussianKernel[this.number_of_kernels];
 	}
 	
@@ -40,7 +46,7 @@ public class GaussianMixture
 			for( index = 0; index < kernels.length; index++ )
 				if( kernels[index] == null )
 					break;
-			kernels[Math.min( index, kernels.length-1 )] = new GaussianKernel(value);
+			kernels[Math.min( index, kernels.length-1 )] = new GaussianKernel(value,this.alpha);
 		}
 		Arrays.sort(kernels,GaussianKernel.WEIGHTCOMPARATOR);
 		normalizeWeight();

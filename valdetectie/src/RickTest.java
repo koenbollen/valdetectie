@@ -4,7 +4,6 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import com.tigam.valdetectie.streams.ErodeImageStream;
 import com.tigam.valdetectie.streams.ImageStream;
 import com.tigam.valdetectie.streams.LinuxDeviceImageStream;
 import com.tigam.valdetectie.utils.Imager;

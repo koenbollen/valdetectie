@@ -4,11 +4,12 @@ import java.util.Arrays;
 
 public class GaussianModel
 {
-	public static final double THRESHOLD = .1;
+	public static final double THRESHOLD = .025;
 	
 	private final int width;
 	private final int height;
 	private final int number_of_kernels;
+	private final double alpha;
 	private GaussianMixture[] mixtures;
 
 	public GaussianModel( int width, int height )
@@ -18,12 +19,18 @@ public class GaussianModel
 	
 	public GaussianModel( int width, int height, int number_of_kernels )
 	{
+		this( width, height, number_of_kernels, GaussianKernel.DEFAULT_ALPHA );
+	}
+	
+	public GaussianModel( int width, int height, int number_of_kernels, double alpha )
+	{
 		this.width = width;
 		this.height = height;
 		this.number_of_kernels = number_of_kernels;
+		this.alpha = alpha;
 		this.mixtures = new GaussianMixture[width*height];
 		for( int i = 0; i < this.mixtures.length; i++ )
-			this.mixtures[i] = new GaussianMixture( number_of_kernels );
+			this.mixtures[i] = new GaussianMixture( number_of_kernels, alpha );
 	}
 	
 	public void update( int[] data )

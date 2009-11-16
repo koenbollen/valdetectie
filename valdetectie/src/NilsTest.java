@@ -37,7 +37,7 @@ public class NilsTest
 			bm.pushImage(data1);
 			
 			imgs[0].setImage(Utils.data2image(data1, in.width(), in.height()));
-			imgs[1].setImage(Utils.data2image(RickTest.doThings(bm.getForeground(data1),in.width(),in.height(),3), in.width(), in.height()));
+		//	imgs[1].setImage(Utils.data2image(RickTest.doThings(bm.getForeground(data1),in.width(),in.height(),3), in.width(), in.height()));
 
 			count++;
 			count %= 100;

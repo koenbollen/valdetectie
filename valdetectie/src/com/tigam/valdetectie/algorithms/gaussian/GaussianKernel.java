@@ -6,7 +6,7 @@ public class GaussianKernel
 {
 	public static final double INITIAL_DEVIATION = 128.0;
 	public static final double DEFAULT_ALPHA = 1.0/1000;
-	public static final double DEFAULT_BIAS = .1;
+	public static final double DEFAULT_BIAS = .01;
 	
 	public static final Comparator<GaussianKernel> WEIGHTCOMPARATOR = new Comparator<GaussianKernel>()
 	{
