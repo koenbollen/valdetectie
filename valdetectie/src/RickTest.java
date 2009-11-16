@@ -16,7 +16,7 @@ public class RickTest
        		final String screenshotLoc = "/home/seigi/.workspace/valdetectie/src/";
     		final String filenameB = "me_bw.png";
     		
-    		//*
+    		/*
     		BufferedImage img = ImageIO.read( new File(screenshotLoc + filenameB) );
     		int[] data = Utils.image2data(img);
     		for (int i = 0; i < data.length; i++) 
@@ -47,7 +47,7 @@ public class RickTest
     		
     		//*/
     		
-    		/*
+    		//*
     		int width = 9;
     		int height = 9;
     		int intensity = 1;
@@ -80,12 +80,12 @@ public class RickTest
     		printIntArr(tmp, width);
     		//*/
     		
-    		/*
-    		dilate(tmp, width, height, intensity);
-    		erode(tmp, width, height, intensity*2);
-    		dilate(tmp, width, height, intensity);
+    		//*
+    		erode(tmp, width, height, intensity);
+    		dilate(tmp, width, height, intensity*2);
+    		erode(tmp, width, height, intensity);
     		//*/
-    		/*
+    		//*
     		System.out.print("After: ");
     		printIntArr(tmp, width);
     		//*/
