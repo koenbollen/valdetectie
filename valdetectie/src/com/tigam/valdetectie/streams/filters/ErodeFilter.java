@@ -1,7 +1,7 @@
 package com.tigam.valdetectie.streams.filters;
 
 /**
- * Erodes an image
+ * Erodes and Dilates a  
  * 
  * @author rick
  *
@@ -15,7 +15,7 @@ public class ErodeFilter implements ImageFilter
 	private int intensity;
 	
 	public ErodeFilter() {
-		this(2);
+		this(1);
 	}
 	public ErodeFilter(int intensity) {
 		this.intensity = intensity;
@@ -27,17 +27,18 @@ public class ErodeFilter implements ImageFilter
 		if( img == null )
 			return null;
 		
-		reversedManhattanDistance(img, width, height);           
-
-        //Loops through the entire array and applies the intensity by setting
-    	//all the values within the intensity threshold to white, the rest to black
+		//Calculate the manhattan distance from the nearest occupied pixel (1 = occupied)
+    	manhattanDistance(img, width, height);
+    	
+    	//Loops through the entire array and applies the intensity by setting
+    	//all the values within the intensity threshold to black, the rest to white
         for (int i = 0; i < img.length; i++) {
-        	img[i] = (img[i] <= this.intensity) ? 0xFFFFFF : 0x000000; // White : Black
+        	img[i] = (img[i] <= this.intensity) ? 0x000000 : 0xFFFFFF; // Black : White
         }
 		
 		return img;
 	}
-	
+
     public int getIntensity() {
     	return this.intensity;
     }
@@ -46,21 +47,21 @@ public class ErodeFilter implements ImageFilter
     	this.intensity = intensity;
     }
 	
-	/*
+    /*
      * Slightly modified from the 2D variant at:
      * @url http://ostermiller.org/dilate_and_erode.html
      */
-    private void reversedManhattanDistance(int[] data, int width, int height) {
+    private void manhattanDistance(int[] data, int width, int height) {
     	//traverse from top left to bottom right
         for (int y = 0; y < height; y++){
             for (int x = 0; x < width; x++) {
-                if ((data[x + (width * y)]&0xFF) != 0){ // Is it White?
-                    // first pass and pixel was off, it gets a zero
+                if ((data[x + (width * y)]&0xFF) == 0 ){ //Is it black?
+                    // first pass and pixel was on, it gets a zero
                 	data[x + (width * y)] = 0;
                 } else {
-                    // pixel was on
+                    // pixel was off
                     // It is at most the sum of the lengths of the array
-                    // away from a pixel that is off
+                    // away from a pixel that is on
                 	data[x + (width * y)] = width + height;
                     // or one more than the pixel to the north
                     if (y > 0) 

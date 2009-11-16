@@ -1,14 +1,13 @@
 package com.tigam.valdetectie.algorithms.gaussian;
 
-import java.util.Arrays;
-
 public class GaussianModel
 {
-	public static final double THRESHOLD = .025;
+	public static final double THRESHOLD = 0.2;
 	
 	private final int width;
 	private final int height;
 	private final int number_of_kernels;
+	private final double threshold;
 	private final double alpha;
 	private GaussianMixture[] mixtures;
 
@@ -27,6 +26,7 @@ public class GaussianModel
 		this.width = width;
 		this.height = height;
 		this.number_of_kernels = number_of_kernels;
+		this.threshold = THRESHOLD/number_of_kernels;
 		this.alpha = alpha;
 		this.mixtures = new GaussianMixture[width*height];
 		for( int i = 0; i < this.mixtures.length; i++ )
@@ -48,7 +48,7 @@ public class GaussianModel
 		int[] image = new int[this.mixtures.length];
 		for( int i = 0; i < data.length; i++ )
 		{
-			if(this.mixtures[i].getWeight(data[i]&0xff) < THRESHOLD )
+			if(this.mixtures[i].getWeight(data[i]&0xff) < (THRESHOLD/number_of_kernels) )
 				image[i] = 0xffffffff;
 			else
 				image[i] = 0;

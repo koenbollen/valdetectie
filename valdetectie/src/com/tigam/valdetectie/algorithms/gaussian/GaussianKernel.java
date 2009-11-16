@@ -6,7 +6,7 @@ public class GaussianKernel
 {
 	public static final double INITIAL_DEVIATION = 128.0;
 	public static final double DEFAULT_ALPHA = 1.0/1000;
-	public static final double DEFAULT_BIAS = .01;
+	public static final double DEFAULT_BIAS = .05;
 	
 	public static final Comparator<GaussianKernel> WEIGHTCOMPARATOR = new Comparator<GaussianKernel>()
 	{
@@ -59,6 +59,15 @@ public class GaussianKernel
 	}
 
 	public void update( double value )
+	{
+		weight += alpha * ( 1 - weight - bias );
+		double delta = value - mean;
+		mean += alpha * delta;
+		variance += alpha * (delta*delta-variance);
+	}
+
+	@Deprecated
+	public void weighted_update( double value )
 	{
 		weight += alpha * ( 1 - weight - bias );
 		double delta = value - mean;

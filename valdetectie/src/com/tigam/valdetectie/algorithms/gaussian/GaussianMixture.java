@@ -7,35 +7,37 @@ public class GaussianMixture
 	public static final int MAHALANOBIS = 2;
 
 	private final int number_of_kernels;
+
 	private final double alpha;
+
 	private GaussianKernel[] kernels;
 
-	public GaussianMixture( int number_of_kernels )
+	public GaussianMixture(int number_of_kernels)
 	{
-		this( number_of_kernels, GaussianKernel.DEFAULT_ALPHA );
+		this(number_of_kernels, GaussianKernel.DEFAULT_ALPHA);
 	}
-	public GaussianMixture( int number_of_kernels, double alpha )
+
+	public GaussianMixture(int number_of_kernels, double alpha)
 	{
 		this.number_of_kernels = number_of_kernels;
 		this.alpha = alpha;
 		this.kernels = new GaussianKernel[this.number_of_kernels];
 	}
-	
-	public void update( double value )
+
+	public void update(double value)
 	{
 		boolean placed = false;
 		for( int i = 0; i < kernels.length; i++ )
 		{
 			if( kernels[i] == null )
 				break;
-			if( !placed && kernels[i].contains( value, MAHALANOBIS ) )
+			if( !placed && kernels[i].contains(value, MAHALANOBIS) )
 			{
 				kernels[i].update(value);
 				placed = true;
-			}
-			else
+			} else
 			{
-				kernels[i].reduce(); 
+				kernels[i].reduce();
 			}
 			if( kernels[i].getWeight() < 0 )
 				kernels[i] = null;
@@ -46,12 +48,13 @@ public class GaussianMixture
 			for( index = 0; index < kernels.length; index++ )
 				if( kernels[index] == null )
 					break;
-			kernels[Math.min( index, kernels.length-1 )] = new GaussianKernel(value,this.alpha);
+			kernels[Math.min(index, kernels.length - 1)] = new GaussianKernel(
+					value, this.alpha);
 		}
-		Arrays.sort(kernels,GaussianKernel.WEIGHTCOMPARATOR);
+		Arrays.sort(kernels, GaussianKernel.WEIGHTCOMPARATOR);
 		normalizeWeight();
 	}
-	
+
 	private void normalizeWeight()
 	{
 		double total = 0;
@@ -60,17 +63,17 @@ public class GaussianMixture
 				total += kernels[i].getWeight();
 		for( int i = 0; i < kernels.length; i++ )
 			if( kernels[i] != null )
-				kernels[i].normalize( total );
+				kernels[i].normalize(total);
 	}
 
-	public double getWeight( double value )
+	public double getWeight(double value)
 	{
 		for( int i = 0; i < kernels.length; i++ )
-			if( kernels[i] != null && kernels[i].contains( value, MAHALANOBIS ) )
+			if( kernels[i] != null && kernels[i].contains(value, MAHALANOBIS) )
 				return kernels[i].getWeight();
 		return 0;
 	}
-	
+
 	@Deprecated
 	public int getKernelCount()
 	{
