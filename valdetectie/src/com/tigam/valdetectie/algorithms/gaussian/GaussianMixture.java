@@ -74,6 +74,21 @@ public class GaussianMixture
 		return 0;
 	}
 
+	public double getMeanAboveThreshold( double threshold )
+	{
+		double total = 0;
+		double c = 0;
+		for( int i = 0; i < kernels.length; i++ )
+		{
+			if( kernels[i] != null && kernels[i].getWeight() > threshold)
+			{
+				total += kernels[i].getMean()*kernels[i].getWeight();
+				c += kernels[i].getWeight();
+			}
+		}
+		return total/c;
+	}
+	
 	@Deprecated
 	public int getKernelCount()
 	{

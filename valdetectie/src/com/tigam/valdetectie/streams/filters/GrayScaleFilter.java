@@ -18,12 +18,15 @@ public class GrayScaleFilter implements ImageFilter
 	{
 		if( img == null )
 			return null;
+		
+		int [] res = new int[img.length];
+		
 		for( int i = 0; i < img.length; i++ )
 		{
 			int g = ( (img[i]>>16&0xff)+(img[i]>>8&0xff)+(img[i]&0xff) ) / 3;
-			img[i] =  0xff000000 | g << 16 | g << 8 | g;
+			res[i] =  0xff000000 | g << 16 | g << 8 | g;
 		}
-		return img;
+		return res;
 	}
 
 }

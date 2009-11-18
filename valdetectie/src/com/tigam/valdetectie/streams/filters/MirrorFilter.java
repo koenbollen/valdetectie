@@ -10,15 +10,15 @@ public class MirrorFilter implements ImageFilter
 {
 	public static final MirrorFilter instance = new MirrorFilter();
 	@Override
-	public int[] applyFilter(int[] orig, int width, int height)
+	public int[] applyFilter(int[] img, int width, int height)
 	{
-		if( orig == null )
+		if( img == null )
 			return null;
-		int[] img = new int[orig.length];
+		int[] res = new int[img.length];
 		for( int y = 0; y < height; y++ )
 			for( int x = 0; x < width; x++ )
-				img[ y * width + width-x-1 ] = orig[ y * width + x ];
-		return img;
+				res[ y * width + width-x-1 ] = img[ y * width + x ];
+		return res;
 	}
 
 }

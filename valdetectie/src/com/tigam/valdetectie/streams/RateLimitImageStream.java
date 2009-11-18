@@ -1,8 +1,7 @@
-package com.tigam.valdetectie.streams.filters;
+package com.tigam.valdetectie.streams;
 
 import static java.lang.Math.max;
 
-import com.tigam.valdetectie.streams.ImageStream;
 
 /**
  * RateLimitImageStream.

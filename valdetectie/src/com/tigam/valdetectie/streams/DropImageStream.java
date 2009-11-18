@@ -27,6 +27,7 @@ public final class DropImageStream implements ImageStream {
 		this.mutex = new Object();
 
 		Thread t = new Thread(new Poller());
+		t.setDaemon(true);
 		t.setName("Frame Dropper");
 		t.start();
 	}

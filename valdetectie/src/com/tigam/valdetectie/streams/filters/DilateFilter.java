@@ -26,16 +26,17 @@ public class DilateFilter implements ImageFilter
 	{
 		if( img == null )
 			return null;
-		
+	
+		int [] res = new int[img.length];
 		reversedManhattanDistance(img, width, height);           
 
         //Loops through the entire array and applies the intensity by setting
     	//all the values within the intensity threshold to white, the rest to black
         for (int i = 0; i < img.length; i++) {
-        	img[i] = (img[i] <= this.intensity) ? 0xFFFFFF : 0x000000; // White : Black
+        	res[i] = (img[i] <= this.intensity) ? 0xFFFFFF : 0x000000; // White : Black
         }
 		
-		return img;
+		return res;
 	}
 	
     public int getIntensity() {

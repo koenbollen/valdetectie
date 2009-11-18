@@ -15,9 +15,12 @@ public class InvertFilter implements ImageFilter
 	{
 		if( img == null )
 			return null;
+		
+		int [] res = new int[img.length];
 		for( int i = 0; i < img.length; i++ )
-			img[i] ^= 0x00FFFFFF;
-		return img;
+			res[i] = img[i]^0x00FFFFFF;
+		
+		return res;
 	}
 
 }

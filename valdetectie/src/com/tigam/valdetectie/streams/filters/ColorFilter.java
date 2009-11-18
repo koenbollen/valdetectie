@@ -29,10 +29,14 @@ public class ColorFilter implements ImageFilter
 	@Override
 	public int[] applyFilter(int[] img, int width, int height)
 	{
+		if (img == null)
+			return null;
+			
+		int [] res = new int[img.length];
 		int x = img.length;
 		while( x --> 0 )
-			img[x] = img[x] & (0xff<<color_shift);
-		return img;
+			res[x] = img[x] & (0xff<<color_shift);
+		return res;
 	}
 
 }

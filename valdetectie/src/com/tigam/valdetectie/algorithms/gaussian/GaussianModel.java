@@ -10,6 +10,7 @@ public class GaussianModel
 	private final double threshold;
 	private final double alpha;
 	private GaussianMixture[] mixtures;
+	private double last_ratio;
 
 	public GaussianModel( int width, int height )
 	{
@@ -31,6 +32,7 @@ public class GaussianModel
 		this.mixtures = new GaussianMixture[width*height];
 		for( int i = 0; i < this.mixtures.length; i++ )
 			this.mixtures[i] = new GaussianMixture( number_of_kernels, alpha );
+		this.last_ratio = 0;
 	}
 	
 	public void update( int[] data )
@@ -46,14 +48,37 @@ public class GaussianModel
 		if( data.length != this.mixtures.length )
 			throw new RuntimeException( "given data's length differs" );
 		int[] image = new int[this.mixtures.length];
+		last_ratio = 0;
 		for( int i = 0; i < data.length; i++ )
 		{
-			if(this.mixtures[i].getWeight(data[i]&0xff) < (THRESHOLD/number_of_kernels) )
-				image[i] = 0xffffffff;
+			if(this.mixtures[i].getWeight(data[i]&0xff) < threshold )
+			{
+				image[i] = ~0;
+				last_ratio++;
+			}
 			else
+			{
 				image[i] = 0;
+			}
 		}
+		last_ratio /= data.length;
 		return image;
+	}
+	
+	public double getRatio()
+	{
+		return last_ratio;
+	}
+	
+	public int[] getMeanModel()
+	{	
+		int[] res = new int[this.mixtures.length];
+		for( int i = 0; i < this.mixtures.length; i++ )
+		{
+			res[i] = (int)this.mixtures[i].getMeanAboveThreshold(threshold);
+			res[i] = res[i]<<16|res[i]<<8|res[i];
+		}
+		return res;
 	}
 
 	@Deprecated

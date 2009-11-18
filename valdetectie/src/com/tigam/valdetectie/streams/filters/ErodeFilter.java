@@ -27,16 +27,18 @@ public class ErodeFilter implements ImageFilter
 		if( img == null )
 			return null;
 		
+		int [] res = new int[img.length];
+		
 		//Calculate the manhattan distance from the nearest occupied pixel (1 = occupied)
     	manhattanDistance(img, width, height);
     	
     	//Loops through the entire array and applies the intensity by setting
     	//all the values within the intensity threshold to black, the rest to white
         for (int i = 0; i < img.length; i++) {
-        	img[i] = (img[i] <= this.intensity) ? 0x000000 : 0xFFFFFF; // Black : White
+        	res[i] = (img[i] <= this.intensity) ? 0x000000 : 0xFFFFFF; // Black : White
         }
 		
-		return img;
+		return res;
 	}
 
     public int getIntensity() {
