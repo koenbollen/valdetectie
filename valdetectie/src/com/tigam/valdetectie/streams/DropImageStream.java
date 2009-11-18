@@ -54,7 +54,7 @@ public final class DropImageStream implements ImageStream {
 
 	@Override
 	public int width() {
-		return this.source.height();
+		return this.source.width();
 	}
 
 }
