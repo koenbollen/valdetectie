@@ -15,7 +15,9 @@ import javax.swing.JLabel;
  * the {@link #setImage(Image)} method.
  * 
  * @author Koen Bollen
+ * @deprecated Use {@link ImageDisplay}
  */
+@Deprecated
 public class Imager extends JFrame
 {
 	private static final long serialVersionUID = -4362164667953944983L;

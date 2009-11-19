@@ -15,6 +15,7 @@ import com.tigam.valdetectie.streams.filters.ImageFilter;
 import com.tigam.valdetectie.streams.filters.ColorFilter;
 import com.tigam.valdetectie.streams.filters.InvertFilter;
 import com.tigam.valdetectie.streams.filters.NeighborDifferenceFilter;
+import com.tigam.valdetectie.utils.ImageDisplay;
 import com.tigam.valdetectie.utils.Imager;
 import com.tigam.valdetectie.utils.Utils;
 
@@ -42,15 +43,7 @@ public class TestKoen
 		// in = new RateLimitImageStream(in, 24);
 
 
-		Imager[] imgs = new Imager[6];
-		for( int i = 0; i < imgs.length; i++ )
-		{
-			imgs[i] = new Imager();
-			imgs[i].setVisible(true);
-			imgs[i].setTitle("Imager " + i);
-		}
-		
-		Utils.PositionImagers(in.width(), in.height(), 50, imgs);
+		ImageDisplay display = new ImageDisplay(in.width(), in.height(), 5 );
 
 		GaussianModel model = new GaussianModel(in.width(), in.height(), 8, 1 / 3000.0);
 		ShadowDetector shadowDetector = new ShadowDetector(in.width(), in.height());
@@ -66,19 +59,19 @@ public class TestKoen
 		DilateFilter dilate1 = new DilateFilter(2);
 		ImageFilter noiseFilter = new CompoundImageFilter(dilate0, erode0,dilate1);
 
+		display.update();
 		while( (img = in.read()) != null )
 		{
-			//img2 = NeighborDifferenceFilter.instance.applyFilter(img, in.width(), in.height());
-			imgs[0].setImage(Utils.data2image(img, in.width(), in.height()));
+			display.image( 0, img );
 	
 			model.update(img);
 			
 			bg = model.getMeanModel();
-			imgs[1].setImage(Utils.data2image(bg, in.width(), in.height()));
+			display.image( 1, bg );
 			tmp = model.getKernelCountImage();
-			imgs[2].setImage(Utils.data2image(tmp, in.width(), in.height()));
+			display.image( 2, tmp );
 			fg = model.foreground(img);
-			imgs[3].setImage(Utils.data2image(fg, in.width(), in.height()));
+			display.image( 3, fg );
 
 			if(model.getRatio() < 0.75 )
 			{
@@ -86,7 +79,8 @@ public class TestKoen
 			}
 			else if(sh == null )
 				sh = new int[img.length];
-			imgs[4].setImage(Utils.data2image(sh, in.width(), in.height()));
+			display.image( 4, sh );
+
 
 			for( int i = fg.length; i --> 0; )
 			{
@@ -102,7 +96,8 @@ public class TestKoen
 			fg = ColorFilter.red.applyFilter(fg, in.width(), in.height());
 			for( int i = fg.length; i --> 0; )
 				img[i] = img[i] | fg[i];
-			imgs[5].setImage(Utils.data2image(img, in.width(), in.height()));
+			display.image( 5, img );
+
 			
 			/*/
 			fg = noiseFilter.applyFilter(fg, in.width(), in.height());
@@ -114,8 +109,9 @@ public class TestKoen
 				img[i] = img[i] | fg[i];
 			imgs[5].setImage(Utils.data2image(img, in.width(), in.height()));
 			//*/
+			
+			display.update();
 		}
-		imgs[0].setImage(null);
 
 		// */
 	}
