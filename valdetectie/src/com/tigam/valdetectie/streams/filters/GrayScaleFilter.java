@@ -23,8 +23,13 @@ public class GrayScaleFilter implements ImageFilter
 		
 		for( int i = 0; i < img.length; i++ )
 		{
-			int g = ( (img[i]>>16&0xff)+(img[i]>>8&0xff)+(img[i]&0xff) ) / 3;
-			res[i] =  0xff000000 | g << 16 | g << 8 | g;
+			int r = (img[i]>>16&0xff);
+			int g = (img[i]>>8&0xff);
+			int b = (img[i]&0xff);
+			// ITU-R 601-2 luma transform:
+		    // L = R * 299/1000 + G * 587/1000 + B * 114/1000
+			int l = (int)(r * 299.0/1000 + g * 587.0/1000 + b * 114.0/1000);
+			res[i] =  0xff000000 | l << 16 | l << 8 | l;
 		}
 		return res;
 	}
