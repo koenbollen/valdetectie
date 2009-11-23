@@ -98,6 +98,10 @@ public class LinuxDeviceImageStream implements ImageStream
 		}
 		this.imageInput = in;
 		
+		// skip first frames
+		for (int i=0; i<10; i++)
+			this.read();
+		
 	}
 	
 	@Override

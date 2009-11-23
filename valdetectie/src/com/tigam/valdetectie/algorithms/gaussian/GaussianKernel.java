@@ -6,7 +6,7 @@ public class GaussianKernel
 {
 	public static final double INITIAL_DEVIATION = 128.0;
 	public static final double DEFAULT_ALPHA = 1.0/1000;
-	public static final double DEFAULT_BIAS = .05;
+	public static final double DEFAULT_BIAS = .5;
 	
 	public static final Comparator<GaussianKernel> WEIGHTCOMPARATOR = new Comparator<GaussianKernel>()
 	{
@@ -76,9 +76,10 @@ public class GaussianKernel
 		variance += alpha / weight * (delta*delta-variance);
 	}
 	
-	public void reduce()
+	public double reduce()
 	{
 		weight -= alpha * ( weight + bias );
+		return weight;
 	}
 	
 	public boolean contains( double value, int mahalanobis )

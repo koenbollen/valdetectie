@@ -1,6 +1,6 @@
 package com.tigam.valdetectie.streams;
 
-public final class DropImageStream implements ImageStream {
+public final class FrameDropImageStream implements ImageStream {
 
 	final class Poller implements Runnable {
 
@@ -22,7 +22,7 @@ public final class DropImageStream implements ImageStream {
 	protected int[] image;
 	protected final Object mutex;
 
-	public DropImageStream(ImageStream source) {
+	public FrameDropImageStream(ImageStream source) {
 		this.source = source;
 		this.mutex = new Object();
 

@@ -1,11 +1,13 @@
 import java.io.File;
 
+import com.tigam.valdetectie.algorithms.Settings;
 import com.tigam.valdetectie.algorithms.ShadowDetector;
 import com.tigam.valdetectie.algorithms.gaussian.GaussianModel;
-import com.tigam.valdetectie.streams.DropImageStream;
+import com.tigam.valdetectie.streams.FrameDropImageStream;
 import com.tigam.valdetectie.streams.ImageFilterStream;
 import com.tigam.valdetectie.streams.ImageStream;
 import com.tigam.valdetectie.streams.LinuxDeviceImageStream;
+import com.tigam.valdetectie.streams.RateLimitImageStream;
 import com.tigam.valdetectie.streams.VideoFileImageStream;
 import com.tigam.valdetectie.streams.filters.CompoundImageFilter;
 import com.tigam.valdetectie.streams.filters.DilateFilter;
@@ -24,6 +26,8 @@ public class TestKoen
 
 	public static void main(String[] args) throws Exception
 	{
+		//Settings.instance.show();
+		
 		File f;
 		VideoFileImageStream x;
 		LinuxDeviceImageStream x2;
@@ -33,10 +37,10 @@ public class TestKoen
 
 		/*/
 		ImageStream in = new LinuxDeviceImageStream(320 / 2, 240 / 2);
-		in = new DropImageStream(in);
+		in = new FrameDropImageStream(in);
 		/*/
 		ImageStream in = new LinuxDeviceImageStream(320, 240);
-		in = new DropImageStream(in);
+		in = new FrameDropImageStream(in);
 		//*/
 
 		in = new ImageFilterStream(in, GrayScaleFilter.instance);
@@ -54,11 +58,18 @@ public class TestKoen
 		int[] fg;
 		int[] sh = null;
 
+		//*/
 		DilateFilter dilate0 = new DilateFilter(5);
 		ErodeFilter erode0 = new ErodeFilter(7);
 		DilateFilter dilate1 = new DilateFilter(2);
+		/*/
+		ErodeFilter dilate0 = new ErodeFilter(2);
+		DilateFilter erode0 = new DilateFilter(7);
+		ErodeFilter dilate1 = new ErodeFilter(5);
+		//*/
 		ImageFilter noiseFilter = new CompoundImageFilter(dilate0, erode0,dilate1);
 
+		display.focus(5);
 		display.update();
 		while( (img = in.read()) != null )
 		{

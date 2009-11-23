@@ -14,8 +14,8 @@ import static java.lang.Math.sqrt;
  */
 public class MeanDeviation
 {
-	private int sum;
-	private int squared;
+	private double sum;
+	private double squared;
 	private int count;
 	
 	private double deviationSquared;
@@ -53,7 +53,7 @@ public class MeanDeviation
 	 * 
 	 * @param value The new value to insert.
 	 */
-	public void insert( int value )
+	public void insert( double value )
 	{
 		this.sum += value;
 		this.squared += value*value;
@@ -67,7 +67,7 @@ public class MeanDeviation
 	 * 
 	 * @param value The value to remove.
 	 */
-	public void remove( int value )
+	public void remove( double value )
 	{
 		if( this.count <= 0 )
 			return;

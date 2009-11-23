@@ -415,19 +415,19 @@ public class ImageDisplay extends JFrame
     @Deprecated
 	public static void main( String[] args ) throws Exception
 	{
-		//*/ // Remove one of the first slashed to toggle the code block.
+		/*/ // Remove one of the first slashed to toggle the code block.
     	
-		ImageDisplay display = new ImageDisplay( 128, 96, 2 );
-		int[] img = new int[128*96];
-		for( int c = 0; c < 20; c++ )
+		ImageDisplay display = new ImageDisplay( 32, 24, 2 );
+		int[] img = new int[32*24];
+		for( int c = 0; c < 200; c++ )
 		{
-			int v = (int)((19-c)/19.0*255.0);
+			int v = (int)((199-c)/199.0*255.0);
 			Arrays.fill( img, v<<16|v<<8|v );
 			display.image(c,img);
 
 			display.update();
 			if( c > 5 )
-				Thread.sleep( 1000 );
+				Thread.sleep( 100 );
 			//display.unfocus();
 		}
 		

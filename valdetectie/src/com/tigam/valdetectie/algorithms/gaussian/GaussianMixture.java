@@ -37,10 +37,9 @@ public class GaussianMixture
 				placed = true;
 			} else
 			{
-				kernels[i].reduce();
+				if( kernels[i].reduce() < 0 )
+					kernels[i] = null;
 			}
-			if( kernels[i].getWeight() < 0 )
-				kernels[i] = null;
 		}
 		if( !placed )
 		{

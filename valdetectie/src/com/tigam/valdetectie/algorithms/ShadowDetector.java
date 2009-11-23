@@ -1,10 +1,21 @@
 package com.tigam.valdetectie.algorithms;
 
+import com.tigam.valdetectie.utils.MeanDeviation;
 
+/**
+ * Based on the Shadow Detection from the paper (section 3.2): 
+ * Background Substraction and Shadow Detection in Grayscale Video Sequences 
+ * by Julio Cezar Silveira Jacques Jr, Claudio Rosito Jung and Soraia Raupp Musse
+ * 
+ * @author Koen Bollen & Nils Dijk
+ */
 public class ShadowDetector
 {
 	public static final int N = 4;
-	public static final double L = 0.96;
+	public static final int M = 1;
+	public static double Lncc = 0.98;
+	public static double Lstd = 0.054;
+	public static double Llow = 0.503;
 	
 	private final int width;
 	private final int height;
@@ -69,10 +80,55 @@ public class ShadowDetector
 		return er(img,bg,i,j) / Math.sqrt( sn(bg,i,j) * sn(img,i,j) );
 	}
 	
+	/**
+	 * 
+	 * @param img
+	 * @param bg
+	 * @param i
+	 * @param j
+	 * @return the squared deviation of the neighbors of i and j with the size of {@link ShadowDetector#M}
+	 */
+	private double stds( int[] img, int[] bg, int i, int j)
+	{
+		double _i, b;
+		MeanDeviation md = new MeanDeviation();
+		for( int n = -M; n <= M; n++ )
+		{
+			for( int m = -M; m <= M; m++ )
+			{
+				_i = neighbor(img, i, j, n, m);
+				b = neighbor(img, i, j, n, m);
+				if( b == 0 )
+					md.insert(0);
+				else
+					md.insert( _i/b );
+			}
+		}
+		return md.deviationSquared();
+	}
+	
+	private boolean secondPass( int[] img, int[] bg, int index )
+	{
+		double r = (double)(img[index]&0xff) / (double)(bg[index]&0xff);
+		double std = stds(img, bg, index%width, index/width);
+		return std < Lstd*Lstd && Llow <= r && r < 1;
+	}
+	
 	private boolean isShadow( int[] img, int[] bg, int i, int j )
 	{
-		//System.out.println(ncc(img,bg,i,j));
-		return ncc(img,bg,i,j) > L && sn(img,i,j) < sn(bg,i,j);
+		double er = er(img,bg,i,j);
+		double eb = sn(bg,i,j);
+		double et = sn(img,i,j);
+		
+		// first part of the statement below is the check if the ncc is higher than the L value
+		// but this time without the root calculation which is a very expansive calculation
+		return (1.0/((eb*et)/(er*er))) > Lncc*Lncc && et < eb;
+	}
+	
+	private boolean isShadowOld( int[] img, int[] bg, int i, int j )
+	{
+//		System.out.println(ncc(img,bg,i,j));
+		return ncc(img,bg,i,j) > Lncc && sn(img,i,j) < sn(bg,i,j);
 	}
 	
 	public int[] shadow( int[] img, int[] bg, int[] fg  )  
@@ -87,8 +143,23 @@ public class ShadowDetector
 			// Only filter foreground pixels:
 			if( fg[i] == 0 )
 				continue;
-			if( isShadow( img, bg, i%width, i/width ) )
+			
+			//*/
+			if( isShadow( img, bg, i%width, i/width ) && secondPass(img,bg, i) )
+			/*/
+			if( isShadowOld( img, bg, i%width, i/width ) )
+			//*/
 				result[i] = ~0;
+			
+			
+			/* remove/add the beginning slash to comment/uncomment the test of the isShadow optimalization
+			//  in case you suspect an error in the optimalization
+			if (isShadow( img, bg, i%width, i/width ) != isShadowOld( img, bg, i%width, i/width ))
+				System.err.println("The optimalization of the isShadow methode returns a different value than the original one! FIX IT!");
+			//*/
+			
+			
+			//TODO: check if this block below is still needed or we can remove it
 			/*
 			result[i] = (int)(ncc(img,bg,i%width, i/width)*0xff);
 			if( result[i] == 0xff )
