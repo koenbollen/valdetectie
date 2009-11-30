@@ -1,6 +1,13 @@
 package com.tigam.valdetectie.algorithms;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 import com.tigam.valdetectie.utils.UnionFind;
+import com.tigam.valdetectie.utils.Utils;
 
 
 /**
@@ -43,7 +50,7 @@ public class CCL
 
 		for( int i = 0; i < img.length; i++ )
 		{
-			if( img[i] == 0 )
+			if( (img[i]&0xFF) == 0 )
 				continue;
 			int x = i % width;
 			int y = i / width;
@@ -85,12 +92,12 @@ public class CCL
 	{
 
 		Location[] locations = Location.values();
-		int[] closest = new int[locations.length];
+		int[] neighbors = new int[locations.length];
 		for( int i = 0; i < locations.length; i++ )
-			if( n(img, width, height, x, y, locations[i].x, locations[i].y) > 0 )
-				closest[i] = n(labels, width, height, x, y, locations[i].x,
+			if( (n(img, width, height, x, y, locations[i].x, locations[i].y)&0xFF) > 0 )
+				neighbors[i] = n(labels, width, height, x, y, locations[i].x,
 						locations[i].y);
-		return closest;
+		return neighbors;
 	}
 
 	private static int n(int[] img, int width, int height, int x, int y, int n, int m)
@@ -107,7 +114,7 @@ public class CCL
 	/* Test Main
 	 */
 	@Deprecated
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
 		int[] img = {
 				1, 0, 1, 0, 1,
@@ -117,11 +124,19 @@ public class CCL
 				0, 1, 1, 1, 1,
 				0, 0, 0, 1, 1
 		};
-
-		int[] res = ccl( img, 5, 6, 13 );
+		BufferedImage bi = ImageIO.read(new File("/home/koen/iDick.png") );
+		int[] img2 = Utils.image2data(bi) ;
+		
+		int c = 1;
+		for( int i = 0; i < img2.length; i++ )
+			if( (img2[i]&0xff) != 0 )
+				c++;
+		
+		System.out.println("c: "+ c);
+		int[] res = ccl( img2, 100, 100, c );
 		for( int i = 0; i < res.length; i++ )
 		{
-			if (i != 0 && i%5 == 0)
+			if (i != 0 && i%100 == 0)
 				System.out.println();
 			System.out.print(res[i] + ", ");
 		}
