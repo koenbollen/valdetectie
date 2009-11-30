@@ -2,7 +2,7 @@ package com.tigam.valdetectie.algorithms.gaussian;
 
 public class GaussianModel
 {
-	public static final double THRESHOLD = 0.2;
+	public static final double THRESHOLD = 0.5;
 	
 	private final int width;
 	private final int height;

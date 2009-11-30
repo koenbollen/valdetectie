@@ -56,8 +56,12 @@ import javax.swing.JLabel;
  */
 public class ImageDisplay extends JFrame
 {
+	private static final long serialVersionUID = 5880332920926051031L;
+
 	private class ImageField extends JLabel
 	{
+		private static final long serialVersionUID = 1L;
+		
 		public int id;
 		public ImageIcon icon;
 		public ImageField()

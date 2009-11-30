@@ -17,6 +17,7 @@ import javax.swing.JLabel;
  */
 public class Utils
 {
+
 	/**
 	 * Show's an image in a dialog and blocks the program. Method returns when
 	 * the dialog is closed.
@@ -25,11 +26,23 @@ public class Utils
 	 */
 	public static void showImage(Image image)
 	{
+		showImage(image, true);
+	}
+	
+	/**
+	 * Show's an image in a dialog and blocks the program. Method returns when
+	 * the dialog is closed.
+	 * 
+	 * @param image The image to display
+	 * @param modal If true this method is blocking.
+	 */
+	public static void showImage(Image image, boolean modal)
+	{
 		ImageIcon icon = new ImageIcon(image);
 		JLabel label = new JLabel(icon);
 		JDialog frame = new JDialog();
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		frame.setModal(true);
+		frame.setModal(modal);
 		frame.getContentPane().add(label);
 		frame.pack();
 		frame.setVisible(true);

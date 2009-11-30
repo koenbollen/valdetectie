@@ -14,7 +14,7 @@ public class ShadowDetector
 	public static final int N = 4;
 	public static final int M = 1;
 	public static double Lncc = 0.98;
-	public static double Lstd = 0.054;
+	public static double Lstd = 0.001;
 	public static double Llow = 0.503;
 	
 	private final int width;
@@ -122,7 +122,7 @@ public class ShadowDetector
 		
 		// first part of the statement below is the check if the ncc is higher than the L value
 		// but this time without the root calculation which is a very expansive calculation
-		return (1.0/((eb*et)/(er*er))) > Lncc*Lncc && et < eb;
+		return (1.0/((eb*et)/(er*er))) > Lncc*Lncc;// && et < eb;
 	}
 	
 	private boolean isShadowOld( int[] img, int[] bg, int i, int j )

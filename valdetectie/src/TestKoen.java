@@ -26,7 +26,7 @@ public class TestKoen
 
 	public static void main(String[] args) throws Exception
 	{
-		//Settings.instance.show();
+		Settings.instance.show();
 		
 		File f;
 		VideoFileImageStream x;
@@ -49,7 +49,7 @@ public class TestKoen
 
 		ImageDisplay display = new ImageDisplay(in.width(), in.height(), 5 );
 
-		GaussianModel model = new GaussianModel(in.width(), in.height(), 8, 1 / 3000.0);
+		GaussianModel model = new GaussianModel(in.width(), in.height(), 8, 1 / 500.0);
 		ShadowDetector shadowDetector = new ShadowDetector(in.width(), in.height());
 
 		int[] img;
@@ -84,7 +84,7 @@ public class TestKoen
 			fg = model.foreground(img);
 			display.image( 3, fg );
 
-			if(model.getRatio() < 0.75 )
+			if(model.getRatio() < 0.75)
 			{
 				sh = shadowDetector.shadow(img, bg, fg);
 			}

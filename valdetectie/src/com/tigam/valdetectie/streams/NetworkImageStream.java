@@ -8,7 +8,7 @@ import java.net.UnknownHostException;
 
 import javax.imageio.ImageIO;
 
-import com.tigam.valdetectie.streams.filters.GrayScaleImageStream;
+import com.tigam.valdetectie.streams.filters.GrayScaleFilter;
 import com.tigam.valdetectie.tools.ImageStreamServer;
 import com.tigam.valdetectie.utils.Imager;
 import com.tigam.valdetectie.utils.Utils;
@@ -97,7 +97,7 @@ public class NetworkImageStream implements ImageStream
 			System.err.println( "unable to connect to "+host+":"+port );
 			return;
 		}
-		ImageStream cam = new GrayScaleImageStream( nIn );
+		ImageStream cam = new ImageFilterStream( nIn, GrayScaleFilter.instance );
 		Imager imager = new Imager();
 		imager.setVisible(true);
 		while (true){
