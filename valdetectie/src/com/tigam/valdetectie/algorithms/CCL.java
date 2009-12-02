@@ -1,8 +1,13 @@
 package com.tigam.valdetectie.algorithms;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
+
 import com.tigam.valdetectie.utils.UnionFind;
+import com.tigam.valdetectie.utils.Utils;
 
 
 /**
@@ -39,8 +44,12 @@ public class CCL
 	 * @param height Height of the image.
 	 * @param count Number of forground pixels.
 	 */
-	public static int[] ccl(int[] img, int width, int height, int count)
+	public static int[] ccl(int[] img, int width)
 	{
+		if (img.length % width != 0)
+			throw new IllegalArgumentException();
+		
+		int height = img.length / width;
 		int[] labels = new int[img.length];
 		UnionFind linked = new UnionFind();
 
@@ -64,7 +73,7 @@ public class CCL
 				labels[i] = closest;
 				for( int j = 0; j < neighbors.length; j++ )
 					if( neighbors[j] > 0 )
-						linked.union( closest, neighbors[j] );
+						linked.union( neighbors[j], closest );
 			}
 			else
 			{
@@ -122,16 +131,7 @@ public class CCL
 				0, 1, 1, 1, 1,
 				0, 0, 0, 1, 1
 		};
-		//BufferedImage bi = ImageIO.read(new File("/home/koen/iDick.png") );
-		//int[] img2 = Utils.image2data(bi) ;
-		
-//		int c = 1;
-//		for( int i = 0; i < img2.length; i++ )
-//			if( (img2[i]&0xff) != 0 )
-//				c++;
-//		System.out.println("c: "+ c);
-		
-		int[] res = ccl( img, 5, 6, 13 );
+		int[] res = ccl( img, 5 );
 		for( int i = 0; i < res.length; i++ )
 		{
 			if (i != 0 && i%5 == 0)
