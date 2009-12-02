@@ -1,6 +1,7 @@
 import java.io.File;
 
 import com.tigam.valdetectie.algorithms.gaussian.GaussianModel;
+import com.tigam.valdetectie.streams.FrameDropImageStream;
 import com.tigam.valdetectie.streams.ImageFilterStream;
 import com.tigam.valdetectie.streams.ImageStream;
 import com.tigam.valdetectie.streams.LinuxDeviceImageStream;
@@ -17,9 +18,9 @@ public class RickTest
         public static void main(String[] args) throws Exception
         {              
        		final String screenshotLoc = "/home/seigi/.workspace/valdetectie/src/";
-       		final String screenshotName = "Screenshot-d.png";
+       		final String screenshotName = "Screenshot-f.png";
        		
-       		/*
+       		/*/
        		BufferedImage in = ImageIO.read(new File(screenshotLoc + screenshotName));
        		
        		Imager[] imgs = new Imager[2];
@@ -37,17 +38,17 @@ public class RickTest
        		imgs[0].setImage(Utils.data2image(img, in.getWidth(), in.getHeight()));
        		img = BoxFilter.instance.applyFilter(img, in.getWidth(), in.getHeight());
        		imgs[1].setImage(Utils.data2image(img, in.getWidth(), in.getHeight()));
-       		//*/
+       		/*/
        		
        		
        		File f;
     		VideoFileImageStream x;
     		LinuxDeviceImageStream x2;
     		//*
-    		//ImageStream in = new VideoFileImageStream( new File( "/home/public/hall_monitor.mpg" ), 320, 240 );
+    		ImageStream in = new VideoFileImageStream( new File( "/home/public/hall_monitor.mpg" ), 320, 240 );
     		//ImageStream in = new VideoFileImageStream( new File( "/home/public/hall_monitor.mpg" ), 320/2, 240/2 );
-    		ImageStream in = new LinuxDeviceImageStream(320/2, 240/2);
-
+    		//ImageStream in = new LinuxDeviceImageStream(320/2, 240/2);
+    		in = new FrameDropImageStream(in);
     		in = new ImageFilterStream(in, GrayScaleFilter.instance);
     		//in = new RateLimitImageStream(in, 24);
 
@@ -65,19 +66,25 @@ public class RickTest
 
     		int[] img;
     		int[] img2;
+    		//*
+    		DilateFilter dilate0 = new DilateFilter(2);
+    		ErodeFilter erode0 = new ErodeFilter(3);
+    		DilateFilter dilate1 = new DilateFilter(1);
+    		/*/
     		DilateFilter dilate0 = new DilateFilter(5);
     		ErodeFilter erode0 = new ErodeFilter(7);
     		DilateFilter dilate1 = new DilateFilter(2);
+    		//*/
     		while( (img=in.read()) != null )
     		{
     			imgs[0].setImage( Utils.data2image(img, in.width(), in.height()) );
     			model.update( img );
     			img2 = model.getMeanImage();
-    			imgs[1].setImage( Utils.data2image(img2, in.width(), in.height()) );
+    			//imgs[1].setImage( Utils.data2image(img2, in.width(), in.height()) );
     			img2 = model.getKernelCountImage();
-    			imgs[2].setImage( Utils.data2image(img2, in.width(), in.height()) );
+    			//imgs[2].setImage( Utils.data2image(img2, in.width(), in.height()) );
     			img2 = model.foreground(img);			
-    			imgs[3].setImage( Utils.data2image(img2, in.width(), in.height()) );
+    			//imgs[3].setImage( Utils.data2image(img2, in.width(), in.height()) );
 
     			img2 = dilate0.applyFilter(img2, in.width(), in.height());
     			img2 = erode0.applyFilter(img2, in.width(), in.height());

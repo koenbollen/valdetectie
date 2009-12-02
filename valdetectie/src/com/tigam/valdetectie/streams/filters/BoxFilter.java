@@ -1,6 +1,11 @@
 package com.tigam.valdetectie.streams.filters;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import com.tigam.valdetectie.utils.Box;
 
 /**
  * Boxes around things
@@ -45,12 +50,7 @@ public class BoxFilter implements ImageFilter {
     		if(x < height)
     			img[x * width] = -1;
     	}
-    	
-		//img[x + (width * y)] = 0xFF0000;
-		//img[(x - 1) + (width * y)]		//LEFT
-    	//img[(x - 1) + (width * (y - 1))]	//TOPLEFT
-    	//img[x + (width * (y - 1))]		//TOP
-    	//img[(x + 1) + (width * (y - 1))]	//TOPRIGHT
+
 		for (int y = 1; y < height; y++){
             for (int x = 1; x < width; x++) {
             	curPixel = x + (width * y);
@@ -111,16 +111,123 @@ public class BoxFilter implements ImageFilter {
 	
 	private void colourize(int[] img, int width, int height, ArrayList<Integer> labels) {
 		int[] colours = new int[] {0xFF0000, 0x00FF00, 0x0000FF, 0x000000, 0xD80000, 0xD8CB00, 0x00D8CB, 0x0056D8, 0x8E00D8, 0xD800C6, 0xC40000, 0xFF4040, 0xFF9B9B, 0xA09BFF, 0xA09BFF, 0x0A00C6 };
-
+		HashMap<Integer, Box> boxlist = new HashMap<Integer, Box>();
+		
 		for (int i = 0; i < img.length; i++) {
 			if (img[i] == -1) {
 				img[i] = ~0; // White
 			} else {
-				if (img[i]-1 >= 0)
-					img[i] = colours[(labels.get(img[i]-1)-1) % colours.length];
+				if (img[i]-1 >= 0) {
+					int label = (labels.get(img[i]-1)-1);
+					int x = i % width;
+					int y = (int)Math.floor(i / width);
+					
+					if (boxlist.get(label) == null) {
+						boxlist.put(label, new Box(x, y));
+					} else {
+						boxlist.get(label).setMinMax(x, y);
+					}
+					img[i] = colours[label % colours.length];
+				}
 			}
         }
+		
+		//TODO: Change this cheap solution to something efficient
+		Iterator it = boxlist.entrySet().iterator();
+		Box[] boxArray = new Box[boxlist.entrySet().size()];
+		int counter = 0;
+		while(it.hasNext()) {
+			Map.Entry entry = (Map.Entry)it.next();
+			boxArray[counter] = (Box)entry.getValue();
+			counter++;
+		}
+		
+		//Hide small boxes
+		for (int i = 0;  i < boxArray.length; i++) {
+			if (boxArray[i].size() <= 600) {
+				boxArray[i].setDisplay(false);
+				clearBox(img, width, height, boxArray[i]);
+				
+			}
+		}
+		
+		//Merge Boxes
+		/*
+		for (int i = 0; i < boxArray.length-1; i++) {
+			for (int j = i + 1; j < boxArray.length; j++) {
+				if (i != j && boxArray[i].getDisplay() && boxArray[j].getDisplay()) {
+					if (boxArray[i].intersect(boxArray[j])) {
+						boxArray[i].merge(boxArray[j]);
+						boxArray[j].setDisplay(false);
+					}
+				}
+			}
+		}
+		//*/
+		
+		//Display Box or hide the content
+		for (int i = 0;  i < boxArray.length; i++) {
+			if (boxArray[i] != null && boxArray[i].getDisplay()) {
+				boundingBoxDrawerer(img, width, height, boxArray[i]);
+			}
+		}
+		
+		
+		/*
+		
+		it = boxlist.entrySet().iterator();
+		
+		while(it.hasNext()) {
+			Map.Entry entry = (Map.Entry)it.next();
+			Box box = (Box)entry.getValue();
+			
+			if (box.size() >= 300) 
+				boundingBoxDrawerer(img, width, height, box);
+			else
+				clearBox(img, width, height, box);
+			//System.out.println("Size #"+ entry.getKey() +": "+ box.size());
+			//System.out.println(box.getBottomRightX() +" - "+ box.getTopLeftX() +" x "+ box.getBottomRightY() +" - "+ box.getTopLeftY());
+		}
+		*/
 	}
+
+	private void boundingBoxDrawerer(int[] img, int width, int height, Box box ) {
+		int topLeftX = box.getTopLeftX();
+		int topLeftY = box.getTopLeftY();
+		int bottomRightX = box.getBottomRightX();
+		int bottomRightY = box.getBottomRightY();
+		
+		for (int x = topLeftX; x < bottomRightX; x++) {
+			//img[x + (width * y)] = 0;
+			img[(topLeftY * width) + x] = 0x000000;
+			img[(bottomRightY * width) + x] = 0x000000;
+		}
+		for (int y = topLeftY; y < bottomRightY; y++ ) {
+			img[(y * width) + topLeftX] = 0x000000;
+			img[(y * width) + bottomRightX] = 0x000000;
+		}
+	}
+	
+	/**
+	 * Empties the pixels inside the  box
+	 * @param img Image that is to be pudated
+	 * @param width Width of the img
+	 * @param height Height of the img
+	 * @param box Box that is to be cleared
+	 */
+	private void clearBox(int[] img, int width, int height, Box box ) {
+		int topLeftX = box.getTopLeftX();
+		int topLeftY = box.getTopLeftY();
+		int bottomRightX = box.getBottomRightX();
+		int bottomRightY = box.getBottomRightY();
+		
+		for (int y = topLeftY; y <= bottomRightY; y++){
+			for (int x = topLeftX; x <= bottomRightX; x++) {
+				img[x + (width * y)] = ~0; //White
+			}
+		}
+	}
+	
 	
 	private void updateLabels(ArrayList<Integer> labels, int oldData, int newData) {
 		int index = -1;
