@@ -1,5 +1,9 @@
 package com.tigam.valdetectie.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
 /**
  * Implementation of Tarjan's union-find data structure. Elements are integers.
  * A good description of union-find can be found in [Cormen, et. al. 1990].
@@ -7,14 +11,14 @@ package com.tigam.valdetectie.utils;
 public class UnionFind
 {
 	/** The trees of Nodes that represent the disjoint sets. */
-	Node[] nodes;
+	List<Node> nodes;
 
-	Node[] stack;
+	Stack<Node> stack;
 
-	public UnionFind(int size)
+	public UnionFind()
 	{
-		nodes = new Node[size];
-		stack = new Node[size];
+		nodes = new ArrayList<Node>();
+		stack = new Stack<Node>();
 	}
 
 	/**
@@ -24,7 +28,9 @@ public class UnionFind
 	 */
 	private Node findNode(int a)
 	{
-		Node na = nodes[a];
+		Node na = null;
+		if (a < nodes.size())
+			na = nodes.get(a);
 
 		if( na == null )
 		{
@@ -34,7 +40,9 @@ public class UnionFind
 			root.child = new Node(a);
 			root.child.parent = root;
 
-			nodes[a] = root.child;
+			while (nodes.size() <= a)
+				nodes.add(null);
+			nodes.set(a, root.child);
 
 			return root;
 		}
@@ -56,21 +64,20 @@ public class UnionFind
 	 */
 	private Node findNode(Node node)
 	{
-		int top = 0;
 
 		// Find the child of the root element.
 		while( node.parent.child == null )
 		{
-			stack[top++] = node;
+			stack.push(node);
 			node = node.parent;
 		}
 
 		// Do path compression on the way back down.
 		Node rootChild = node;
 
-		while( top > 0 )
+		while( stack.size() > 0 )
 		{
-			node = stack[--top];
+			node = stack.pop();
 			node.parent = rootChild;
 		}
 

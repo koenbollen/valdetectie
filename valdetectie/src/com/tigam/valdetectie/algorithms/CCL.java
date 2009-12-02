@@ -1,13 +1,8 @@
 package com.tigam.valdetectie.algorithms;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
 import com.tigam.valdetectie.utils.UnionFind;
-import com.tigam.valdetectie.utils.Utils;
 
 
 /**
@@ -20,7 +15,10 @@ public class CCL
 {
 	enum Location
 	{
-		LEFT(-1, 0), TOPLEFT(-1, -1), TOP(0, -1), TOPRIGHT(1, -1);
+		LEFT(-1, 0),
+		TOPLEFT(-1, -1),
+		TOP(0, -1),
+		TOPRIGHT(1, -1);
 
 		public final int x;
 
@@ -44,7 +42,7 @@ public class CCL
 	public static int[] ccl(int[] img, int width, int height, int count)
 	{
 		int[] labels = new int[img.length];
-		UnionFind linked = new UnionFind(count);
+		UnionFind linked = new UnionFind();
 
 		int nextlabel = 1;
 
@@ -124,19 +122,19 @@ public class CCL
 				0, 1, 1, 1, 1,
 				0, 0, 0, 1, 1
 		};
-		BufferedImage bi = ImageIO.read(new File("/home/koen/iDick.png") );
-		int[] img2 = Utils.image2data(bi) ;
+		//BufferedImage bi = ImageIO.read(new File("/home/koen/iDick.png") );
+		//int[] img2 = Utils.image2data(bi) ;
 		
-		int c = 1;
-		for( int i = 0; i < img2.length; i++ )
-			if( (img2[i]&0xff) != 0 )
-				c++;
+//		int c = 1;
+//		for( int i = 0; i < img2.length; i++ )
+//			if( (img2[i]&0xff) != 0 )
+//				c++;
+//		System.out.println("c: "+ c);
 		
-		System.out.println("c: "+ c);
-		int[] res = ccl( img2, 100, 100, c );
+		int[] res = ccl( img, 5, 6, 13 );
 		for( int i = 0; i < res.length; i++ )
 		{
-			if (i != 0 && i%100 == 0)
+			if (i != 0 && i%5 == 0)
 				System.out.println();
 			System.out.print(res[i] + ", ");
 		}
