@@ -1,5 +1,7 @@
 import java.io.File;
+import java.util.List;
 
+import com.tigam.valdetectie.algorithms.BoundingBoxExtractor;
 import com.tigam.valdetectie.algorithms.Settings;
 import com.tigam.valdetectie.algorithms.ShadowDetector;
 import com.tigam.valdetectie.algorithms.gaussian.GaussianModel;
@@ -7,19 +9,15 @@ import com.tigam.valdetectie.streams.FrameDropImageStream;
 import com.tigam.valdetectie.streams.ImageFilterStream;
 import com.tigam.valdetectie.streams.ImageStream;
 import com.tigam.valdetectie.streams.LinuxDeviceImageStream;
-import com.tigam.valdetectie.streams.RateLimitImageStream;
 import com.tigam.valdetectie.streams.VideoFileImageStream;
+import com.tigam.valdetectie.streams.filters.ColorFilter;
 import com.tigam.valdetectie.streams.filters.CompoundImageFilter;
 import com.tigam.valdetectie.streams.filters.DilateFilter;
 import com.tigam.valdetectie.streams.filters.ErodeFilter;
 import com.tigam.valdetectie.streams.filters.GrayScaleFilter;
 import com.tigam.valdetectie.streams.filters.ImageFilter;
-import com.tigam.valdetectie.streams.filters.ColorFilter;
-import com.tigam.valdetectie.streams.filters.InvertFilter;
-import com.tigam.valdetectie.streams.filters.NeighborDifferenceFilter;
+import com.tigam.valdetectie.utils.Box;
 import com.tigam.valdetectie.utils.ImageDisplay;
-import com.tigam.valdetectie.utils.Imager;
-import com.tigam.valdetectie.utils.Utils;
 
 public class TestKoen
 {
@@ -35,7 +33,7 @@ public class TestKoen
 		//ImageStream in = new VideoFileImageStream( new File("/home/public/hall_monitor.mpg" ), 320, 240 );
 		//ImageStream in = new VideoFileImageStream( new File("/home/public/hall_monitor.mpg" ), 320/2, 240/2 );
 
-		/*/
+		//*/
 		ImageStream in = new LinuxDeviceImageStream(320 / 2, 240 / 2);
 		in = new FrameDropImageStream(in);
 		/*/
@@ -49,7 +47,7 @@ public class TestKoen
 
 		ImageDisplay display = new ImageDisplay(in.width(), in.height(), 5 );
 
-		GaussianModel model = new GaussianModel(in.width(), in.height(), 8, 1 / 500.0);
+		GaussianModel model = new GaussianModel(in.width(), in.height(), 8, 1 / 3000.0);
 		ShadowDetector shadowDetector = new ShadowDetector(in.width(), in.height());
 
 		int[] img;
@@ -102,11 +100,22 @@ public class TestKoen
 				}
 			}
 			
+			
 			//*/
 			fg = noiseFilter.applyFilter(fg, in.width(), in.height());
+			// extract bounding boxes from foreground
+			List<Box> boxes = BoundingBoxExtractor.extractBoxes(fg,in.width());
+			
 			fg = ColorFilter.red.applyFilter(fg, in.width(), in.height());
 			for( int i = fg.length; i --> 0; )
 				img[i] = img[i] | fg[i];
+			
+			
+			//boxes = BoundingBoxExtractor.mergeBoxes(boxes);
+			// draw bounding boxes
+			for (Box b:boxes)
+				BoundingBoxExtractor.boundingBoxDrawerer(img,in.width(),b,0x00FF00);
+			
 			display.image( 5, img );
 
 			

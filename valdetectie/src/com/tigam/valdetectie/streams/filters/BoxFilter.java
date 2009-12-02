@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.tigam.valdetectie.utils.Box;
+import com.tigam.valdetectie.utils.BoxFactory;
 
 /**
  * Boxes around things
@@ -111,7 +111,7 @@ public class BoxFilter implements ImageFilter {
 	
 	private void colourize(int[] img, int width, int height, ArrayList<Integer> labels) {
 		int[] colours = new int[] {0xFF0000, 0x00FF00, 0x0000FF, 0x000000, 0xD80000, 0xD8CB00, 0x00D8CB, 0x0056D8, 0x8E00D8, 0xD800C6, 0xC40000, 0xFF4040, 0xFF9B9B, 0xA09BFF, 0xA09BFF, 0x0A00C6 };
-		HashMap<Integer, Box> boxlist = new HashMap<Integer, Box>();
+		HashMap<Integer, BoxFactory> boxlist = new HashMap<Integer, BoxFactory>();
 		
 		for (int i = 0; i < img.length; i++) {
 			if (img[i] == -1) {
@@ -123,7 +123,7 @@ public class BoxFilter implements ImageFilter {
 					int y = (int)Math.floor(i / width);
 					
 					if (boxlist.get(label) == null) {
-						boxlist.put(label, new Box(x, y));
+						boxlist.put(label, new BoxFactory(x, y));
 					} else {
 						boxlist.get(label).setMinMax(x, y);
 					}
@@ -134,11 +134,11 @@ public class BoxFilter implements ImageFilter {
 		
 		//TODO: Change this cheap solution to something efficient
 		Iterator it = boxlist.entrySet().iterator();
-		Box[] boxArray = new Box[boxlist.entrySet().size()];
+		BoxFactory[] boxArray = new BoxFactory[boxlist.entrySet().size()];
 		int counter = 0;
 		while(it.hasNext()) {
 			Map.Entry entry = (Map.Entry)it.next();
-			boxArray[counter] = (Box)entry.getValue();
+			boxArray[counter] = (BoxFactory)entry.getValue();
 			counter++;
 		}
 		
@@ -191,7 +191,7 @@ public class BoxFilter implements ImageFilter {
 		*/
 	}
 
-	private void boundingBoxDrawerer(int[] img, int width, int height, Box box ) {
+	private void boundingBoxDrawerer(int[] img, int width, int height, BoxFactory box ) {
 		int topLeftX = box.getTopLeftX();
 		int topLeftY = box.getTopLeftY();
 		int bottomRightX = box.getBottomRightX();
@@ -215,7 +215,7 @@ public class BoxFilter implements ImageFilter {
 	 * @param height Height of the img
 	 * @param box Box that is to be cleared
 	 */
-	private void clearBox(int[] img, int width, int height, Box box ) {
+	private void clearBox(int[] img, int width, int height, BoxFactory box ) {
 		int topLeftX = box.getTopLeftX();
 		int topLeftY = box.getTopLeftY();
 		int bottomRightX = box.getBottomRightX();
