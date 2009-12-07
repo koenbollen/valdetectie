@@ -1,5 +1,7 @@
 import java.io.File;
+import java.util.List;
 
+import com.tigam.valdetectie.algorithms.BoundingBoxExtractor;
 import com.tigam.valdetectie.algorithms.gaussian.GaussianModel;
 import com.tigam.valdetectie.streams.FrameDropImageStream;
 import com.tigam.valdetectie.streams.ImageFilterStream;
@@ -7,9 +9,12 @@ import com.tigam.valdetectie.streams.ImageStream;
 import com.tigam.valdetectie.streams.LinuxDeviceImageStream;
 import com.tigam.valdetectie.streams.VideoFileImageStream;
 import com.tigam.valdetectie.streams.filters.BoxFilter;
+import com.tigam.valdetectie.streams.filters.CompoundImageFilter;
 import com.tigam.valdetectie.streams.filters.DilateFilter;
 import com.tigam.valdetectie.streams.filters.ErodeFilter;
 import com.tigam.valdetectie.streams.filters.GrayScaleFilter;
+import com.tigam.valdetectie.streams.filters.ImageFilter;
+import com.tigam.valdetectie.utils.Box;
 import com.tigam.valdetectie.utils.Imager;
 import com.tigam.valdetectie.utils.Utils;
  
@@ -52,7 +57,7 @@ public class RickTest
     		in = new ImageFilterStream(in, GrayScaleFilter.instance);
     		//in = new RateLimitImageStream(in, 24);
 
-    		Imager[] imgs = new Imager[6];
+    		Imager[] imgs = new Imager[4];
     		for( int i = 0; i < imgs.length; i++ )
     		{
     			imgs[i] = new Imager();
@@ -75,6 +80,7 @@ public class RickTest
     		ErodeFilter erode0 = new ErodeFilter(7);
     		DilateFilter dilate1 = new DilateFilter(2);
     		//*/
+    		ImageFilter noiseFilter = new CompoundImageFilter(dilate0, erode0,dilate1);
     		while( (img=in.read()) != null )
     		{
     			imgs[0].setImage( Utils.data2image(img, in.width(), in.height()) );
@@ -86,15 +92,27 @@ public class RickTest
     			img2 = model.foreground(img);			
     			//imgs[3].setImage( Utils.data2image(img2, in.width(), in.height()) );
 
-    			img2 = dilate0.applyFilter(img2, in.width(), in.height());
-    			img2 = erode0.applyFilter(img2, in.width(), in.height());
-    			img2 = dilate1.applyFilter(img2, in.width(), in.height());
+    			img2 = noiseFilter.applyFilter(img2, in.width(), in.height());
     			
-    			imgs[4].setImage( Utils.data2image(img2, in.width(), in.height()) );
+    			imgs[1].setImage( Utils.data2image(img2, in.width(), in.height()) );
     			
-    			img2 = BoxFilter.instance.applyFilter(img2, in.width(), in.height());
+    			List<Box> boxes = BoundingBoxExtractor.extractBoxes(img2, in.width());
     			
-    			imgs[5].setImage( Utils.data2image(img2, in.width(), in.height()) );
+    			int[] imgBoxes = img2.clone();
+    			
+    			// draw bounding boxes
+    			for (Box b : boxes)
+    				BoundingBoxExtractor.boundingBoxDrawerer(imgBoxes,in.width(),b,0x00FF00);
+    			
+    			imgs[2].setImage( Utils.data2image(imgBoxes, in.width(), in.height()) );
+    			
+    			boxes = BoundingBoxExtractor.mergeBoxes(boxes);
+    			
+    			// draw bounding boxes
+    			for (Box b : boxes)
+    				BoundingBoxExtractor.boundingBoxDrawerer(img2, in.width(), b, 0x00FF00);
+    			
+    			imgs[3].setImage( Utils.data2image(img2, in.width(), in.height()) );
     		}
     		imgs[0].setImage(null);
     		

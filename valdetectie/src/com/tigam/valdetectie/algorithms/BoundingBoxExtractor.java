@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.tigam.valdetectie.utils.Box;
 import com.tigam.valdetectie.utils.BoxFactory;
+import com.tigam.valdetectie.utils.UnionFind;
 
 public class BoundingBoxExtractor
 {
@@ -56,10 +57,33 @@ public class BoundingBoxExtractor
 		}
 	}
 	
-	public static List<Box> mergeBoxes(Iterable<Box> boxes){
+	public static List<Box> mergeBoxes(List<Box> boxes){
+		Box [] boxArray = new Box[boxes.size()];
+		boxArray = boxes.toArray(boxArray);
+		UnionFind union = new UnionFind();
+		
 		Box box = null;
-		for (Box b: boxes)
-			box = b.append(box);
-		return Collections.singletonList(box);
+		List<Box> newBoxes = new LinkedList<Box>();
+		
+		for ( int i = 0; i < boxArray.length - 1; i++) {
+			for (int j = i + 1; j < boxArray.length; j++ ) {
+				if (boxArray[i].isIntersecting(boxArray[j])) {
+					union.union(i, j);
+				}
+			}
+		}
+		
+		Box [] result = new Box[boxArray.length];
+		for (int i = 0; i < boxArray.length; i++ ) {
+			int index = union.find(i);
+			result[index] = boxArray[i].append(result[index]);
+		}
+		
+		for (int i = 0; i < boxArray.length; i++ ) {
+			if (result[i] != null)
+				newBoxes.add(result[i]);
+		}
+		
+		return newBoxes;
 	}
 }

@@ -46,6 +46,17 @@ public class Box
 		}
 		return r;
 	}
+	
+	public boolean isIntersecting(Box that) {
+		if (that != null) {
+			return (
+					Math.max(this.topLeftX, that.topLeftX) <= Math.min(this.bottomRightX,that.bottomRightX) &&
+					Math.max(this.topLeftY, that.topLeftY) <= Math.min(this.bottomRightY,	that.bottomRightY)
+					);
+		}
+		
+		return false;
+	}
 
 	/*
 	 * (non-Javadoc)
