@@ -2,14 +2,22 @@ package com.tigam.valdetectie.utils;
 
 public class Box
 {
-	public final int topLeftX;
-
-	public final int topLeftY;
-
 	public final int bottomRightX;
 
 	public final int bottomRightY;
 
+	public final int topLeftX;
+
+	public final int topLeftY;
+
+	public Box(Box box){
+		super();
+		this.topLeftX = box.topLeftX;
+		this.topLeftY = box.topLeftY;
+		this.bottomRightX = box.bottomRightX;
+		this.bottomRightY = box.bottomRightY;
+	}
+	
 	public Box(int topLeftX, int topLeftY, int bottomRightX, int bottomRightY)
 	{
 		super();
@@ -17,6 +25,14 @@ public class Box
 		this.topLeftY = topLeftY;
 		this.bottomRightX = bottomRightX;
 		this.bottomRightY = bottomRightY;
+	}
+	
+	public double ratio(){
+		double width = this.bottomRightX - this.topLeftX;
+		double height = this.bottomRightY - this.topLeftY;
+		if (height == 0)
+			return 0;
+		return width / height;
 	}
 
 	public Box append(Box that)
@@ -27,6 +43,45 @@ public class Box
 				this.topLeftY, that.topLeftY), Math.max(this.bottomRightX,
 				that.bottomRightX), Math.max(this.bottomRightY,
 				that.bottomRightY));
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj)
+	{
+		if( this == obj )
+			return true;
+		if( obj == null )
+			return false;
+		if( getClass() != obj.getClass() )
+			return false;
+		Box other = (Box) obj;
+		if( bottomRightX != other.bottomRightX )
+			return false;
+		if( bottomRightY != other.bottomRightY )
+			return false;
+		if( topLeftX != other.topLeftX )
+			return false;
+		if( topLeftY != other.topLeftY )
+			return false;
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + bottomRightX;
+		result = prime * result + bottomRightY;
+		result = prime * result + topLeftX;
+		result = prime * result + topLeftY;
+		return result;
 	}
 
 	public Box intersect(Box that)
@@ -56,6 +111,12 @@ public class Box
 		}
 		
 		return false;
+	}
+	
+	
+	public double surface()
+	{
+		return (this.topLeftX - this.bottomRightX) * (this.topLeftY - this.bottomRightY);
 	}
 
 	/*

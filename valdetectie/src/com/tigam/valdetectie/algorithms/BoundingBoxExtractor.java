@@ -1,6 +1,5 @@
 package com.tigam.valdetectie.algorithms;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,11 +29,12 @@ public class BoundingBoxExtractor
 			else
 				creators[ccl[i]-1].setMinMax(x, y);
 		}
-		
+				
 		List<Box> boxlist = new LinkedList<Box>();
 		for (int i=0; i<creators.length; i++)
 			if (creators[i] != null)
 				boxlist.add(creators[i].getBox());
+		
 		
 		return boxlist;
 	}
