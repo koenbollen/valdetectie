@@ -86,14 +86,14 @@ public class RateLimitImageStream implements ImageStream
 		if( elapsed > this.delay )
 		{
 			long skip = elapsed / this.delay;
-			System.out.println( "Skipping " + skip + " frames." );
+			//System.out.println( "Skipping " + skip + " frames." );
 			for( int i = 0; i < skip; i++ )
 				if( (img = this.stream.read()) == null )
 					return null;
 			elapsed %= this.delay;
 		}
 		
-		System.out.println( "Sleeping " + (this.delay - elapsed) + " milliseconds." );
+		//System.out.println( "Sleeping " + (this.delay - elapsed) + " milliseconds." );
 		sleep( this.delay - elapsed );
 		this.last = now;
 		

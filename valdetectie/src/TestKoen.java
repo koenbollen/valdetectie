@@ -1,5 +1,4 @@
 import java.io.File;
-import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +15,7 @@ import com.tigam.valdetectie.streams.FrameDropImageStream;
 import com.tigam.valdetectie.streams.ImageFilterStream;
 import com.tigam.valdetectie.streams.ImageStream;
 import com.tigam.valdetectie.streams.LinuxDeviceImageStream;
+import com.tigam.valdetectie.streams.RateLimitImageStream;
 import com.tigam.valdetectie.streams.VideoFileImageStream;
 import com.tigam.valdetectie.streams.filters.ColorFilter;
 import com.tigam.valdetectie.streams.filters.CompoundImageFilter;
@@ -39,21 +39,22 @@ public class TestKoen
 		VideoFileImageStream x;
 		LinuxDeviceImageStream x2;
 
-		// ImageStream in = new VideoFileImageStream( new
-		// File("/home/public/hall_monitor.mpg" ), 320, 240 );
+		 ImageStream in = new VideoFileImageStream( new
+		 File("in03.mpg" ), 320, 240 );
 		// ImageStream in = new VideoFileImageStream( new
 		// File("/home/public/hall_monitor.mpg" ), 320/2, 240/2 );
 
 		// */
-		ImageStream in = new LinuxDeviceImageStream(320, 240);
-		in = new FrameDropImageStream(in);
+		//ImageStream in = new LinuxDeviceImageStream(320, 240);
+		//in = new FrameDropImageStream(in);
 		/*
 		 * / ImageStream in = new LinuxDeviceImageStream(320, 240); in = new
 		 * FrameDropImageStream(in); //
 		 */
 
 		in = new ImageFilterStream(in, GrayScaleFilter.instance);
-		// in = new RateLimitImageStream(in, 24);
+		//in = new FrameDropImageStream(in);
+		in = new RateLimitImageStream(in, 24);
 
 		ImageDisplay display = new ImageDisplay(in.width(), in.height(), 5);
 
