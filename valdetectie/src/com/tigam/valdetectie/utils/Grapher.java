@@ -7,12 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
+import javax.swing.JSplitPane;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.AxisLocation;
-import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -24,16 +23,19 @@ public class Grapher extends JFrame
 {
 	
 	class XYSeriesContainer {
-		
+
 		private double value;
+		private double prev;
 		private int emptyUpdateCount;
-		
-		public final XYSeries data;
+
+		public final XYSeries ratio;
+		public final XYSeries delta;
 		
 		public XYSeriesContainer(int label){
 			this.value = 0;
 			this.emptyUpdateCount = 0;
-			this.data = new XYSeries("Box " + label);
+			this.ratio = new XYSeries("Ratio " + label);
+			this.delta = new XYSeries("Delta " + label);
 		}
 		
 		public void setNext(double value){
@@ -42,9 +44,14 @@ public class Grapher extends JFrame
 		}
 		
 		public void update(){
-			data.add(Grapher.this.updateStep, this.value);
-			while (data.getItemCount() > Grapher.windowSize)
-				data.remove(0);
+			ratio.add(Grapher.this.updateStep, this.value);
+			delta.add(Grapher.this.updateStep, (this.value>-1)?(this.value-this.prev):-1);
+			
+			while (ratio.getItemCount() > Grapher.windowSize)
+				ratio.remove(0);
+			while (delta.getItemCount() > Grapher.windowSize)
+				delta.remove(0);
+			this.prev = this.value;
 			this.value = -1;
 			this.emptyUpdateCount++;
 		}
@@ -54,43 +61,67 @@ public class Grapher extends JFrame
 	 * 
 	 */
 	private static final long serialVersionUID = 7546779555843959009L;
-	private final JFreeChart chart;
+	private final JFreeChart rchart;
+	private final JFreeChart dchart;
+	private final XYPlot rplot;
+	private final XYPlot dplot;
 	
 	private int updateStep;
 	private static final int windowSize = 20;
 	
 	private Map<Integer, XYSeriesContainer> lines;
-	private final XYPlot plot;
 
 	public Grapher(){
-		super("");
+		super("Graphs");
 		
 		this.lines = new HashMap<Integer, XYSeriesContainer>();
 		
 		this.updateStep = 0;
 		
-		chart = ChartFactory.createXYLineChart("Box Ratio", "time", "ratio", null, PlotOrientation.VERTICAL, false, false, false);
-		plot = chart.getXYPlot();
-		plot.getDomainAxis().setAxisLineVisible(false);
-		plot.getDomainAxis().setTickMarksVisible(false);
-		plot.getDomainAxis().setTickLabelsVisible(false);
-		plot.getRangeAxis().setRange(0, 5.0);
-		setContentPane(new ChartPanel(chart));
+		rchart = ChartFactory.createXYLineChart("Ratio", "time", "ratio", null, PlotOrientation.VERTICAL, false, false, false);
+		dchart = ChartFactory.createXYLineChart("Delta", "time", "delta", null, PlotOrientation.VERTICAL, false, false, false);
+		rplot = rchart.getXYPlot();
+		rplot.getDomainAxis().setAxisLineVisible(false);
+		rplot.getDomainAxis().setTickMarksVisible(false);
+		rplot.getDomainAxis().setTickLabelsVisible(false);
+		rplot.getRangeAxis().setRange(0, 5.0);
+		dplot = dchart.getXYPlot();
+		dplot.getDomainAxis().setAxisLineVisible(false);
+		dplot.getDomainAxis().setTickMarksVisible(false);
+		dplot.getDomainAxis().setTickLabelsVisible(false);
+		dplot.getRangeAxis().setRange(-2.0, 2.0);
+		setContentPane(new JSplitPane(JSplitPane.VERTICAL_SPLIT, new ChartPanel(rchart), new ChartPanel(dchart)));
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 	
 	public void add(Map<Box, Integer> boxes){
+		
+		double max = Double.MIN_VALUE;
+		for (Map.Entry<Box, Integer> entry:boxes.entrySet())
+			if( entry.getKey().surface() > max )
+				max = entry.getKey().surface(); 
+
 		for (Map.Entry<Box, Integer> entry:boxes.entrySet()){
 			int box = entry.getValue();
 			if (!lines.containsKey(box)){
 				XYSeriesContainer cont ;
 				lines.put(box, cont = new XYSeriesContainer(box));
-				plot.setDataset(box, new XYSeriesCollection(cont.data));
+				rplot.setDataset(box, new XYSeriesCollection(cont.ratio));
+				dplot.setDataset(box, new XYSeriesCollection(cont.delta));
+//				rplot.setRenderer(box,render);
+//				dplot.setRenderer(box,render);
+			}
+			if( entry.getKey().surface() < max )
+			{
+				rplot.setRenderer(box,null);
+				dplot.setRenderer(box,null);
+			} else {
 				XYLineAndShapeRenderer render = new XYSplineRenderer();
 				render.setPaint(new Color(colour(box)));
-				plot.setRenderer(box,render);
+				rplot.setRenderer(box,render);
+				dplot.setRenderer(box,render);
 			}
 			lines.get(box).setNext(entry.getKey().ratio());
 		}
@@ -106,8 +137,10 @@ public class Grapher extends JFrame
 			cont.getValue().update();
 		}
 		for (Integer i:toRemove){
-			plot.setDataset(i, null);
-			plot.setRenderer(i, null);
+			rplot.setDataset(i, null);
+			rplot.setRenderer(i, null);
+			dplot.setDataset(i, null);
+			dplot.setRenderer(i, null);
 			lines.remove(i);
 		}
 		this.updateStep++;

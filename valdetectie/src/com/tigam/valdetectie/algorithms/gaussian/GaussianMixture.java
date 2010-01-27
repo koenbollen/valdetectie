@@ -81,7 +81,8 @@ public class GaussianMixture
 		{
 			if( kernels[i] != null && kernels[i].getWeight() > threshold)
 			{
-				double sqr = Math.sqrt(kernels[i].getWeight());
+				double sqr = kernels[i].getWeight();
+				sqr = Math.sqrt(sqr);
 				total += kernels[i].getMean()*sqr;
 				c += sqr;
 			}

@@ -65,7 +65,7 @@ public class Settings
 				ShadowDetector.Lncc = value;
 			}
 		}));
-		this.values.add(new Value("Lstd",0, 0.1, ShadowDetector.Lstd, new ValueListener()
+		this.values.add(new Value("Lstd",0, 0.01, ShadowDetector.Lstd, new ValueListener()
 		{
 			@Override
 			public void valueChanged(double value)

@@ -1,7 +1,18 @@
 package com.tigam.valdetectie.utils;
 
+import java.util.Comparator;
+
 public class Box
 {
+	public static final Comparator<Box> SurfaceComperator = new Comparator<Box>()
+	{
+		@Override
+		public int compare(Box o1, Box o2)
+		{
+			return o1.surface() > o2.surface() ? 1 : -1;
+		}
+	};
+	
 	public final int bottomRightX;
 
 	public final int bottomRightY;

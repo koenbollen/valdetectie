@@ -1,10 +1,17 @@
 package com.tigam.valdetectie.utils;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.image.BufferedImage;
+import java.util.Comparator;
+import java.util.Enumeration;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -89,4 +96,62 @@ public class Utils
 			 }
 		 }
 	}
+	
+	/**
+	 * Flash the screen for `millis' milliseconds with given color.
+	 * 
+	 * @author Koen Bollen
+	 * @param millis Number of milliseconds to so the flashscreen.
+	 * @param color The color that the screen should flash.
+	 */
+	public static void flash( long millis, Color color )
+	{
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice gs = ge.getDefaultScreenDevice();
+
+		Frame frame = new Frame(gs.getDefaultConfiguration());
+		Window win = new Window(frame); 
+		win.setBackground( color );
+
+		try {
+			gs.setFullScreenWindow(win);
+			win.validate(); 
+			Thread.sleep(millis);
+		} catch( InterruptedException e ) {
+		} finally {
+			gs.setFullScreenWindow(null);
+		}
+		win.dispose();
+		frame.dispose();
+	}
+	
+	/**
+	 * Flash the screen for `millis' milliseconds with default color red.
+	 * 
+	 * @author Koen Bollen
+	 * @param millis Number of milliseconds to so the flashscreen.
+	 */
+	public static void flash( long millis )
+	{
+		flash( millis, Color.RED );
+	}
+	
+	/**
+	 * Flash the screen for 300 milliseconds with default color red.
+	 * 
+	 * @author Koen Bollen
+	 */
+	public static void flash()
+	{
+		flash( 300 );
+	}
+	
+	public static <T> T sortedFirst(Iterable<T> e, Comparator<T> c){
+		T max = null;
+		for (T t:e)
+			if (max == null || c.compare(t, max) > 0)
+				max = t;
+		return max;
+	}
+	
 }

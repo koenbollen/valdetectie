@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 
@@ -6,6 +7,10 @@ import com.tigam.valdetectie.algorithms.BoundingBoxExtractor;
 import com.tigam.valdetectie.algorithms.NilsHisBoxTracker;
 import com.tigam.valdetectie.algorithms.Settings;
 import com.tigam.valdetectie.algorithms.ShadowDetector;
+import com.tigam.valdetectie.algorithms.dropdetector.AndDropFilter;
+import com.tigam.valdetectie.algorithms.dropdetector.DropDetector;
+import com.tigam.valdetectie.algorithms.dropdetector.DropFilter;
+import com.tigam.valdetectie.algorithms.dropdetector.filters.RatioDropFilter;
 import com.tigam.valdetectie.algorithms.gaussian.GaussianModel;
 import com.tigam.valdetectie.streams.FrameDropImageStream;
 import com.tigam.valdetectie.streams.ImageFilterStream;
@@ -21,6 +26,7 @@ import com.tigam.valdetectie.streams.filters.ImageFilter;
 import com.tigam.valdetectie.utils.Box;
 import com.tigam.valdetectie.utils.Grapher;
 import com.tigam.valdetectie.utils.ImageDisplay;
+import com.tigam.valdetectie.utils.Utils;
 
 public class TestKoen
 {
@@ -39,7 +45,7 @@ public class TestKoen
 		// File("/home/public/hall_monitor.mpg" ), 320/2, 240/2 );
 
 		// */
-		ImageStream in = new LinuxDeviceImageStream(320 / 2, 240 / 2);
+		ImageStream in = new LinuxDeviceImageStream(320, 240);
 		in = new FrameDropImageStream(in);
 		/*
 		 * / ImageStream in = new LinuxDeviceImageStream(320, 240); in = new
@@ -75,6 +81,22 @@ public class TestKoen
 
 		//BoxTracker tracker = new BoxTracker();
 		NilsHisBoxTracker tracker = new NilsHisBoxTracker();
+		DropDetector dropper = new DropDetector();
+		
+		DropFilter filter = new AndDropFilter(
+				new RatioDropFilter(1),
+				new DropFilter()
+		{			
+			@Override
+			public boolean dropped(List<Box> history)
+			{
+				if (history.size() < 2)
+					return false;
+				double delta = history.get(0).ratio() - history.get(1).ratio();
+				return delta > 0.4;
+			}
+		});
+		
 		Grapher grapher = new Grapher();
 		long lastadd = 0;
 
@@ -114,9 +136,17 @@ public class TestKoen
 			// extract bounding boxes from foreground
 			 List<Box> boxes = BoundingBoxExtractor.extractBoxes(fg, in.width());
 
-			 boxes = BoundingBoxExtractor.mergeBoxes(boxes);
+//			 boxes = BoundingBoxExtractor.mergeBoxes(boxes);
 
 			 Map<Box, Integer> tracked = tracker.track(boxes);
+			 dropper.update(tracked);
+			 Box biggestDrop = Utils.sortedFirst(dropper.testDrop(filter), Box.SurfaceComperator);
+			 if (biggestDrop != null && biggestDrop.equals(Utils.sortedFirst(tracked.keySet(), Box.SurfaceComperator)))
+				 //*/
+				 Utils.flash();
+			 	 /*/
+			 	 System.out.println("NewFilterDrop! " + biggestDrop);
+			 	 //*/
 			 
 			 if( System.currentTimeMillis() - lastadd > 50 )
 			 {
@@ -130,10 +160,10 @@ public class TestKoen
 			for( int i = fg.length; i-- > 0; )
 				img[i] = img[i] | fg[i];
 
-			 boxes = BoundingBoxExtractor.mergeBoxes(boxes);
+//			 boxes = BoundingBoxExtractor.mergeBoxes(boxes);
 			// draw bounding boxes
-			 for( Box b : boxes )
-				 BoundingBoxExtractor.boundingBoxDrawerer(img, in.width(), b, 0x00FF00);
+//			 for( Box b : boxes )
+//				 BoundingBoxExtractor.boundingBoxDrawerer(img, in.width(), b, 0x00FF00);
 
 			 // draw tracked
 			 for( Map.Entry<Box, Integer> e : tracked.entrySet() )
