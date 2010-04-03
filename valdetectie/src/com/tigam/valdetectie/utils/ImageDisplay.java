@@ -52,7 +52,10 @@ import javax.swing.JLabel;
  * </code>
  *
  * @since Nov 18, 2009
- * @author Koen Bollen
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class ImageDisplay extends JFrame
 {

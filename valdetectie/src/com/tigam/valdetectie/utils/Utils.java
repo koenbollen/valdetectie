@@ -1,17 +1,8 @@
 package com.tigam.valdetectie.utils;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Comparator;
-import java.util.Enumeration;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -20,7 +11,10 @@ import javax.swing.JLabel;
 /**
  * Utilities class, contains some nifty static methods.
  * 
- * @author Koen Bollen
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class Utils
 {

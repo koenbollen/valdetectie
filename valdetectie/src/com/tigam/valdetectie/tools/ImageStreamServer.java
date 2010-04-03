@@ -29,7 +29,10 @@ import com.tigam.valdetectie.utils.Utils;
  * {@link BlockingQueue} to enable frame dropping.
  * 
  * @see NetworkImageStream
- * @author Nils Dijk & Koen Bollen
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public final class ImageStreamServer
 {

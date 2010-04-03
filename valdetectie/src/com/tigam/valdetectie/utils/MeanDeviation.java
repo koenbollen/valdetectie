@@ -10,7 +10,10 @@ import static java.lang.Math.sqrt;
  * it does not recalulate the deviation everytime a new value is added re moved.
  *
  * @since Oct 2, 2009
- * @author Koen Bollen
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class MeanDeviation
 {

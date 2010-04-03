@@ -11,7 +11,10 @@ import com.tigam.valdetectie.utils.ErrorStreamReader;
 /**
  * An implementation of {@link ImageStream} to capture frames from a webcam in linux
  * 
- * @author Nils Dijk
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class LinuxDeviceImageStream implements ImageStream
 {

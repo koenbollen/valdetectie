@@ -17,7 +17,10 @@ import static java.lang.Math.max;
  * So, this limit is both ways.
  *
  * @since 23 September, 2009
- * @author Koen Bollen
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class RateLimitImageStream implements ImageStream
 {
@@ -86,14 +89,14 @@ public class RateLimitImageStream implements ImageStream
 		if( elapsed > this.delay )
 		{
 			long skip = elapsed / this.delay;
-			//System.out.println( "Skipping " + skip + " frames." );
+//			System.out.println( "Skipping " + skip + " frames." );
 			for( int i = 0; i < skip; i++ )
 				if( (img = this.stream.read()) == null )
 					return null;
 			elapsed %= this.delay;
 		}
 		
-		//System.out.println( "Sleeping " + (this.delay - elapsed) + " milliseconds." );
+//		System.out.println( "Sleeping " + (this.delay - elapsed) + " milliseconds." );
 		sleep( this.delay - elapsed );
 		this.last = now;
 		

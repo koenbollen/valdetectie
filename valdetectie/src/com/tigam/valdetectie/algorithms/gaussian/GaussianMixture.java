@@ -2,6 +2,12 @@ package com.tigam.valdetectie.algorithms.gaussian;
 
 import java.util.Arrays;
 
+/**
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
+ */
 public class GaussianMixture
 {
 	public static final int MAHALANOBIS = 2;

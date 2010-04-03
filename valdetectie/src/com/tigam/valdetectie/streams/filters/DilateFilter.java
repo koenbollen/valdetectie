@@ -3,8 +3,10 @@ package com.tigam.valdetectie.streams.filters;
 /**
  * Erodes an image
  * 
- * @author rick
- *
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class DilateFilter implements ImageFilter
 {

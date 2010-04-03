@@ -7,7 +7,10 @@ package com.tigam.valdetectie.utils;
  * oldest element will be overwritten.
  *
  * @since September 23, 2009
- * @author Koen Bollen <meneer koenbollen nl>
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class CyclicArray<E>
 {

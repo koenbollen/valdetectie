@@ -1,65 +1,89 @@
 package com.tigam.valdetectie.algorithms;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.RandomAccess;
 
 import com.tigam.valdetectie.utils.Box;
-
+/**
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
+ */
 public class BoxTracker
 {
-
-	private Map<Box, Integer> last;
-	private int nextLabel;
-
-	public BoxTracker()
+	
+	static class BoxInterSection
 	{
-		this.nextLabel = 0;
-		this.last = new HashMap<Box, Integer>();
-	}
-
-	public Map<Integer, Box> track(List<Box> boxes)
-	{
-		if( !(boxes instanceof RandomAccess) )
-			boxes = new ArrayList<Box>(boxes);
-
-		Map<Integer, Box> result = new HashMap<Integer, Box>();
-
-		for( int i = 0; i < boxes.size(); i++ )
+		public static final Comparator<BoxInterSection> OVERLAP_SORTER = new Comparator<BoxInterSection>()
 		{
-			Box b = boxes.get(i);
-			double max = Double.MIN_VALUE;
-			Box best = null;
-			for( Box sub : last.keySet() )
+			
+			@Override
+			public int compare(BoxInterSection o1, BoxInterSection o2)
 			{
-				Box inter = b.intersect(sub);
-				if( inter == null )
-					continue;
-				double surface = inter.surface();
-				if( surface > max )
-				{
-					max = surface;
-					best = sub;
-				}
+				if (o1.overlap == o2.overlap)
+					return 0;
+				return o1.overlap > o2.overlap ? -1:1;
 			}
-			if( best != null )
-			{
-				Integer label = last.get(best);
-				result.put(label, b);// best
-			} else
-			{
-				result.put(this.nextLabel++, b);
-			}
+		};
+	
+		public final Box oldBox;
+		public final Box newBox;
+		public final double overlap;
 
+		public BoxInterSection(Box oldBox, Box newBox)
+		{
+			Box intersect = oldBox.intersect(newBox);
+
+			this.oldBox = oldBox;
+			this.newBox = newBox;
+			if( intersect != null )
+				this.overlap = (intersect.surface() / oldBox.surface()) * (intersect.surface() / newBox.surface());
+			else
+				this.overlap = 0;
 		}
-
-		last.clear();
-		for( Integer label : result.keySet() )
-			last.put(result.get(label), label);
-
-		return result;
+	}
+	
+	Map<Box, Integer> last;
+	int nextLabel;
+	public BoxTracker(){
+		this.last = Collections.emptyMap();
+		this.nextLabel = 0;
+	}
+	
+	public Map<Box, Integer> track(List<Box> boxes){
+		List<BoxInterSection> potential = new LinkedList<BoxInterSection>();
+		for (Box nb:boxes){
+			for (Box lb:last.keySet()){
+				if (lb.isIntersecting(nb))
+					potential.add(new BoxInterSection(lb, nb));
+			}
+		}
+		Collections.sort(potential, BoxInterSection.OVERLAP_SORTER);
+		
+		Map<Box,Integer> newLabels = new HashMap<Box, Integer>();
+		
+		while (potential.size() > 0){
+			BoxInterSection use = potential.remove(0);
+			newLabels.put(use.newBox, last.get(use.oldBox));
+			
+			// remove all relatives to use
+			List<BoxInterSection> toRemove = new LinkedList<BoxInterSection>();
+			for (BoxInterSection i:potential)
+				if (i.newBox.equals(use.newBox) || i.oldBox.equals(use.oldBox))
+					toRemove.add(i);
+			potential.removeAll(toRemove);
+		}
+		
+		boxes.removeAll(newLabels.keySet());
+		
+		for (Box b:boxes)
+			newLabels.put(b, this.nextLabel++);
+		this.last = newLabels;
+		return Collections.unmodifiableMap(newLabels);
 	}
 }

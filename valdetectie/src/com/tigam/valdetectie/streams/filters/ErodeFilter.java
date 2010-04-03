@@ -3,10 +3,11 @@ package com.tigam.valdetectie.streams.filters;
 /**
  * Erodes and Dilates a  
  * 
- * @author rick
- *
- */
-public class ErodeFilter implements ImageFilter
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
+ */public class ErodeFilter implements ImageFilter
 {
 	/**
 	 * Easy to use instance of the {@link ErodeDilateFilter}

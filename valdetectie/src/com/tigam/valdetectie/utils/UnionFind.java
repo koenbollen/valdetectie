@@ -7,6 +7,11 @@ import java.util.Stack;
 /**
  * Implementation of Tarjan's union-find data structure. Elements are integers.
  * A good description of union-find can be found in [Cormen, et. al. 1990].
+ * 
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class UnionFind
 {

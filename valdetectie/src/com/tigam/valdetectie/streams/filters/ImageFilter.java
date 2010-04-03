@@ -6,8 +6,10 @@ import com.tigam.valdetectie.streams.ImageFilterStream;
  * An {@link ImageFilter} should be able to process frames with a specific
  * algorithm, the {@link ImageFilterStream} can use them to process streams of images
  * 
- * @author nils
- *
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public interface ImageFilter
 {

@@ -23,7 +23,10 @@ import com.tigam.valdetectie.utils.Utils;
  * by a counter to work around caching.
  * 
  * @since 2009-11-23
- * @author Koen Bollen
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class HTTPImageStream 
 	implements ImageStream

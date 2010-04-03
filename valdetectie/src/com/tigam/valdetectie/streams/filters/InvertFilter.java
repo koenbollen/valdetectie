@@ -2,8 +2,11 @@ package com.tigam.valdetectie.streams.filters;
 
 /**
  * A filter to invert the color of an image 
- * @author nils
  *
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class InvertFilter implements ImageFilter
 {

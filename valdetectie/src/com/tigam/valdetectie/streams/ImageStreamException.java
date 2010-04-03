@@ -3,7 +3,10 @@ package com.tigam.valdetectie.streams;
 /**
  * This exception is thrown when an {@link ImageStream} fails in an operation.
  *  
- * @author Koen Bollen
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class ImageStreamException extends Exception
 {

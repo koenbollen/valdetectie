@@ -1,5 +1,11 @@
 package com.tigam.valdetectie.algorithms.gaussian;
 
+/**
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
+ */
 public class GaussianModel
 {
 	public static final double THRESHOLD = 0.5;

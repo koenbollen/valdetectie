@@ -10,8 +10,10 @@ import com.tigam.valdetectie.utils.BoxFactory;
 /**
  * Boxes around things
  * 
- * @author rick en sam
- *
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class BoxFilter implements ImageFilter {
 	/**

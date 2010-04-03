@@ -14,8 +14,11 @@ import javax.swing.JLabel;
  * This is a simple JFrame that display's one image. The image can be changed/updated with
  * the {@link #setImage(Image)} method.
  * 
- * @author Koen Bollen
  * @deprecated Use {@link ImageDisplay}
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 @Deprecated
 public class Imager extends JFrame

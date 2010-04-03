@@ -8,7 +8,12 @@ import java.util.Arrays;
 import com.tigam.valdetectie.utils.DynamicMedian;
 import com.tigam.valdetectie.utils.MeanDeviation;
 import com.tigam.valdetectie.utils.PixelHistory;
-
+/**
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
+ */
 public class BackgroundModel
 {
 	private final int width;

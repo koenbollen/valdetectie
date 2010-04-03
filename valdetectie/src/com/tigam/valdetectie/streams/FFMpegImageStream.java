@@ -4,7 +4,12 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 import com.tigam.valdetectie.utils.ErrorStreamReader;
-
+/**
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
+ */
 public abstract class FFMpegImageStream implements ImageStream
 {
 	protected String input;

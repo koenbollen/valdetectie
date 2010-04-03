@@ -1,5 +1,10 @@
 package com.tigam.valdetectie.streams;
-
+/**
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
+ */
 public final class FrameDropImageStream implements ImageStream {
 
 	final class Poller implements Runnable {

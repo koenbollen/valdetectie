@@ -3,8 +3,11 @@ package com.tigam.valdetectie.utils;
 
 /**
  * Class to be used to indicate boxes around objects in the stream.
- * @author Sam and definitely not Rick
- *
+ * 
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class BoxFactory {
 	int topLeftX = Integer.MAX_VALUE;

@@ -1,15 +1,19 @@
 package com.tigam.valdetectie.algorithms;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.Discarder;
 import com.tigam.valdetectie.utils.Box;
 import com.tigam.valdetectie.utils.BoxFactory;
 import com.tigam.valdetectie.utils.MeanDeviation;
 import com.tigam.valdetectie.utils.UnionFind;
 
+/**
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
+ */
 public class BoundingBoxExtractor
 {
 

@@ -5,6 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+/**
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
+ */
 public class ErrorStreamReader extends Thread
 {
 
@@ -31,7 +37,9 @@ public class ErrorStreamReader extends Thread
 			{
 				try
 				{
-					System.err.println(reader.readLine());
+					String s = reader.readLine();
+					if (s != null)
+						System.err.println(s);
 	
 				} catch( IOException e )
 				{

@@ -3,8 +3,10 @@ package com.tigam.valdetectie.streams.filters;
 /**
  * Can change a colored image in to a grayscale image. 
  * 
- * @author nils
- *
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class GrayScaleFilter implements ImageFilter
 {

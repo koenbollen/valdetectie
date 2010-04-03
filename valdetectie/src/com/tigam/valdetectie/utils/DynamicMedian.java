@@ -1,5 +1,11 @@
 package com.tigam.valdetectie.utils;
 
+/**
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
+ */
 public class DynamicMedian
 {
 	private final int[] values;

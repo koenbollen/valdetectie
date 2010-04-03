@@ -1,20 +1,16 @@
 package com.tigam.valdetectie.algorithms;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
 import com.tigam.valdetectie.utils.UnionFind;
-import com.tigam.valdetectie.utils.Utils;
-
 
 /**
  * Class containing the static Connected Component Labeling method.
  *
- * @author Koen Bollen
- * @author Nils Dijk
+ * @author Rick van Steen <rick.van.steen@hva.nl>
+ * @author Koen Bollen <koen.bollen@hva.nl>
+ * @author Nils Dijk <nils.dijk@hva.nl>
+ * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
 public class CCL
 {
