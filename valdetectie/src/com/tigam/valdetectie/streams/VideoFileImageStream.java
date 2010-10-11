@@ -19,7 +19,7 @@ import com.tigam.valdetectie.utils.ErrorStreamReader;
  */
 public class VideoFileImageStream implements ImageStream
 {
-	public static final String Path = "/opt/local/bin/";
+	public static final String Path = (System.getProperty("os.name").startsWith("Windows")) ? ".\\" : "/opt/local/bin/";
 	public final File file;
 
 	private InputStream in;

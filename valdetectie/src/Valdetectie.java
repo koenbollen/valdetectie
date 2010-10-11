@@ -42,7 +42,21 @@ public class Valdetectie {
 			f = new File("in03.mpg");
 		else
 			f = new File(args[0]);
-		ImageStream in = new VideoFileImageStream(f, 160, 120);
+		ImageStream in = null;
+		try
+		{
+			in = new VideoFileImageStream(f, 160, 120);
+		}
+		catch (ImageStreamException e)
+		{
+			Throwable cause = e;
+			while(cause != null)
+			{
+				System.out.println(cause.getMessage());
+				cause = cause.getCause();
+			}
+			System.exit(-1);
+		}
 		in = new RateLimitImageStream(in);
 		/*/
 		ImageStream in = new LinuxDeviceImageStream(320, 240);
