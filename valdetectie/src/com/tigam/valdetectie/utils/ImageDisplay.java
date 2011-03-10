@@ -20,6 +20,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import java.io.*;
+
 /**
  * Display one or more images and update them if needed.
  * 
@@ -396,6 +398,22 @@ public class ImageDisplay extends JFrame
     	geometrics();
     	this.setSize( frame_width, frame_height );
     }
+    
+    public void save(int[] data, String filename)
+    {
+    	System.out.println("Writing " + filename);
+    	try
+	    {
+	    	File out = new File(filename);
+	    	out.createNewFile();
+	    	javax.imageio.ImageIO.write(data2image(data), "png", out);
+	    	//out.close();
+	    }
+	    catch(IOException _)
+	    {
+	    	System.out.println(filename + " not written");
+			}
+		}
     
     private BufferedImage data2image( int[] data )
     {

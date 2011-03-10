@@ -45,7 +45,8 @@ public class Valdetectie {
 		ImageStream in = null;
 		try
 		{
-			in = new VideoFileImageStream(f, 160, 120);
+			//in = new VideoFileImageStream(f, 160, 120);
+			in = new VideoFileImageStream(f, 320, 240);
 		}
 		catch (ImageStreamException e)
 		{
@@ -57,7 +58,7 @@ public class Valdetectie {
 			}
 			System.exit(-1);
 		}
-		in = new RateLimitImageStream(in);
+		//in = new RateLimitImageStream(in);
 		/*/
 		ImageStream in = new LinuxDeviceImageStream(320, 240);
 		in = new FrameDropImageStream(in);
@@ -70,7 +71,7 @@ public class Valdetectie {
 		ImageDisplay display = new ImageDisplay(in.width(), in.height(), 5);
 
 		// initialize the background model based on a GaussionModel
-		GaussianModel model = new GaussianModel(in.width(), in.height(), 8, 1 / 3000.0);
+		GaussianModel model = new GaussianModel(in.width(), in.height(), 8, 1 / 30000.0);
 		// initialize a shadowDetector unit to remove shadow from moving pixels for better tracking
 		ShadowDetector shadowDetector = new ShadowDetector(in.width(), in.height());
 
@@ -105,6 +106,8 @@ public class Valdetectie {
 		// focus stream 5 on the display so it is drawed the biggest
 		display.focus(5);
 		display.update();
+		
+		int counter = 0;
 		
 		// do the main loop of the programm detecting falling people
 		while ((img = in.read()) != null) {
@@ -172,6 +175,7 @@ public class Valdetectie {
 
 			// display the final feed to the screen
 			display.image(5, img);
+			display.save(img, "file" + counter++ + ".png");
 
 			// update the screen
 			display.update();
