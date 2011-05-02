@@ -8,7 +8,7 @@ package com.tigam.valdetectie.algorithms.gaussian;
  */
 public class GaussianModel
 {
-	public static final double THRESHOLD = 0.5;
+	public static final double THRESHOLD = 1;
 	
 	private final int width;
 	private final int height;
@@ -43,19 +43,16 @@ public class GaussianModel
 	
 	public void update( int[] data )
 	{
-		if( data.length != this.mixtures.length )
-			throw new RuntimeException( "given data's length differs" );
-		for( int i = 0; i < this.mixtures.length; i++ )
-			mixtures[i].update(data[i]&0xff);
+		if (data.length != mixtures.length) throw new RuntimeException("given data's length differs");
+		for (int i = 0; i < mixtures.length; i++) mixtures[i].update(data[i]&0xff);
 	}
 	
 	public int[] foreground( int[] data )
 	{
-		if( data.length != this.mixtures.length )
-			throw new RuntimeException( "given data's length differs" );
+		if (data.length != this.mixtures.length) throw new RuntimeException( "given data's length differs" );
 		int[] image = new int[this.mixtures.length];
 		last_ratio = 0;
-		for( int i = 0; i < data.length; i++ )
+		for (int i = 0; i < data.length; i++)
 		{
 			if(this.mixtures[i].getWeight(data[i]&0xff) < threshold )
 			{
@@ -86,8 +83,7 @@ public class GaussianModel
 		}
 		return res;
 	}
-
-	@Deprecated
+	
 	public int[] getKernelCountImage()
 	{
 		int[] colors = new int[number_of_kernels+1];
@@ -101,8 +97,7 @@ public class GaussianModel
 			data[i] = colors[this.mixtures[i].getKernelCount()];
 		return data;
 	}
-
-	@Deprecated
+	
 	public int[] getMeanImage()
 	{
 		int[] data = new int[this.mixtures.length];
@@ -114,4 +109,14 @@ public class GaussianModel
 		return data;
 	}
 	
+	public int[] getVarianceImage()
+	{
+		int[] data = new int[this.mixtures.length];
+		for( int i = 0; i < this.mixtures.length; i++ )
+		{
+			data[i] = (int)Math.min(Math.max(0.0, mixtures[i].getDominantVariance()), 255.0);
+			data[i] = data[i] << 16 | data[i] << 8 | data[i];
+		}
+		return data;
+	}
 }

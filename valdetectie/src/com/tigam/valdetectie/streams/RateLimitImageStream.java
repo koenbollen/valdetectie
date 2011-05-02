@@ -34,7 +34,7 @@ public class RateLimitImageStream implements ImageStream
 	private final int rate;
 	private final long delay;
 	
-	private long last;
+	private long previousTime;
 
 	/**
 	 * Create a new {@link RateLimitImageStream} from an existing {@link ImageStream} with
@@ -62,7 +62,7 @@ public class RateLimitImageStream implements ImageStream
 		this.rate = max( 1, rate );
 		this.delay = 1000/this.rate;
 		
-		this.last = -1;
+		this.previousTime = -1;
 	}
 	
 	/**
@@ -73,57 +73,31 @@ public class RateLimitImageStream implements ImageStream
 	public int[] read()
 	{
 		int[] img = this.stream.read();
-		if( img == null )
-			return null;
-		
-		long now = time();
+		long now = System.currentTimeMillis();
 		
 		// Return the first image directly:
-		if( this.last == -1 )
+		if(previousTime > 0)
 		{
-			this.last = now;
-			return img;
+			long elapsed = max( 0, now - previousTime);
+			
+			if (elapsed < this.delay) sleep(this.delay - elapsed);
+			else
+			{
+				// It's okay to have some time left, but skip frames if enough time has passed to read another frame
+				while(elapsed >= 2 * this.delay )
+				{
+					System.out.println("#");
+					img = this.stream.read();
+					elapsed -= this.delay;
+				}
+			}
 		}
-		
-		long elapsed = max( 0, now-this.last );
-		if( elapsed > this.delay )
-		{
-			long skip = elapsed / this.delay;
-//			System.out.println( "Skipping " + skip + " frames." );
-			for( int i = 0; i < skip; i++ )
-				if( (img = this.stream.read()) == null )
-					return null;
-			elapsed %= this.delay;
-		}
-		
-//		System.out.println( "Sleeping " + (this.delay - elapsed) + " milliseconds." );
-		sleep( this.delay - elapsed );
-		this.last = now;
-		
+		previousTime = now;
 		return img;
 	}
-
-	@Override
-	public int width()
-	{
-		return this.width;
-	}
 	
-	@Override
-	public int height()
-	{
-		return this.height;
-	}
-	
-	/**
-	 * Returns the current time in milliseconds.
-	 * 
-	 * @return The current time.
-	 */
-	private static long time()
-	{
-		return System.currentTimeMillis();
-	}
+	public int width()  {return this.width;}
+	public int height() {return this.height;}
 	
 	/**
 	 * Sleep for a given number of milliseconds.
@@ -133,12 +107,11 @@ public class RateLimitImageStream implements ImageStream
 	private static void sleep( long millis )
 	{
 		try
-        {
-	        Thread.sleep( millis );
-        }
-        catch( InterruptedException e )
-        {
-        }
+		{
+			Thread.sleep( millis );
+		}
+		catch( InterruptedException e )
+		{
+		}
 	}
-
 }

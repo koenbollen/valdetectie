@@ -10,12 +10,9 @@ import java.util.Arrays;
  */
 public class GaussianMixture
 {
-	public static final int MAHALANOBIS = 2;
-
+	public static final double MAHALANOBIS = 2.5;
 	private final int number_of_kernels;
-
 	private final double alpha;
-
 	private GaussianKernel[] kernels;
 
 	public GaussianMixture(int number_of_kernels)
@@ -33,28 +30,27 @@ public class GaussianMixture
 	public void update(double value)
 	{
 		boolean placed = false;
-		for( int i = 0; i < kernels.length; i++ )
+		for (int i = 0; i < kernels.length; i++)
 		{
-			if( kernels[i] == null )
-				break;
-			if( !placed && kernels[i].contains(value, MAHALANOBIS) )
+			if(kernels[i] == null) break;
+			if (!placed && kernels[i].contains(value, MAHALANOBIS))
 			{
 				kernels[i].update(value);
 				placed = true;
-			} else
+			}
+			else
 			{
-				if( kernels[i].reduce() < 0 )
-					kernels[i] = null;
+				if (kernels[i].reduce() < 0) kernels[i] = null;
 			}
 		}
-		if( !placed )
+		if (!placed)
 		{
 			int index;
-			for( index = 0; index < kernels.length; index++ )
-				if( kernels[index] == null )
-					break;
-			kernels[Math.min(index, kernels.length - 1)] = new GaussianKernel(
-					value, this.alpha);
+			for (index = 0; index < kernels.length; index++)
+			{
+				if (kernels[index] == null) break; // Find the first empty spot
+			}
+			kernels[Math.min(index, kernels.length - 1)] = new GaussianKernel(value, this.alpha);
 		}
 		Arrays.sort(kernels, GaussianKernel.WEIGHTCOMPARATOR);
 		normalizeWeight();
@@ -63,19 +59,16 @@ public class GaussianMixture
 	private void normalizeWeight()
 	{
 		double total = 0;
-		for( int i = 0; i < kernels.length; i++ )
-			if( kernels[i] != null )
-				total += kernels[i].getWeight();
-		for( int i = 0; i < kernels.length; i++ )
-			if( kernels[i] != null )
-				kernels[i].normalize(total);
+		for (GaussianKernel element : kernels) if (element != null) total += element.getWeight();
+		for (GaussianKernel element : kernels) if (element != null) element.normalize(total);
 	}
 
 	public double getWeight(double value)
 	{
-		for( int i = 0; i < kernels.length; i++ )
-			if( kernels[i] != null && kernels[i].contains(value, MAHALANOBIS) )
-				return kernels[i].getWeight();
+		for (int i = 0; i < kernels.length; i++)
+		{
+			if (kernels[i] != null && kernels[i].contains(value, MAHALANOBIS)) return kernels[i].getWeight();
+		}
 		return 0;
 	}
 
@@ -85,7 +78,7 @@ public class GaussianMixture
 		double c = 0;
 		for( int i = 0; i < kernels.length; i++ )
 		{
-			if( kernels[i] != null && kernels[i].getWeight() > threshold)
+			if( kernels[i] != null && (kernels[i].getWeight() > threshold || i == 0))
 			{
 				double sqr = kernels[i].getWeight();
 				sqr = Math.sqrt(sqr);
@@ -96,21 +89,22 @@ public class GaussianMixture
 		return total/c;
 	}
 	
-	@Deprecated
 	public int getKernelCount()
 	{
 		int c = 0;
-		for( int i = 0; i < kernels.length; i++ )
-			if( kernels[i] != null )
-				c++;
+		for (GaussianKernel element : kernels) if (element != null) c++;
 		return c;
 	}
-
-	@Deprecated
+	
 	public double getDominantMean()
 	{
-		if( kernels[0] == null )
-			return 0;
+		if (kernels[0] == null) return 0;
 		return kernels[0].getMean();
+	}
+	
+	public double getDominantVariance()
+	{
+		if (kernels[0] == null) return 0;
+		return kernels[0].getVariance();
 	}
 }

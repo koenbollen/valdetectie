@@ -35,68 +35,44 @@ public class BoundingBoxExtractor
 		}
 	}
 
-	public static List<Box> extractBoxes(int[] img, int width)
+	public static List<Box> extractBoxes(int[] img, int width, int minSize)
 	{
 		int[] ccl = CCL.ccl(img, width);
 		int maxLabel = Integer.MIN_VALUE;
-		for( int i = 0; i < ccl.length; i++ )
-			maxLabel = Math.max(maxLabel, ccl[i]);
+		for (int i = 0; i < ccl.length; i++) maxLabel = Math.max(maxLabel, ccl[i]);
 		BoxFactory[] creators = new BoxFactory[maxLabel];
 
 		GausianHolder[] deviation = new GausianHolder[maxLabel];
 
 		for( int i = 0; i < ccl.length; i++ )
 		{
-			if( ccl[i] == 0 )
-				continue;
+			if (ccl[i] == 0) continue;
 
 			int labelIndex = ccl[i] - 1;
 			int x = i % width;
 			int y = i / width;
-
+			
 			// add point to BoundingBox
-			if( creators[labelIndex] == null )
-				creators[labelIndex] = new BoxFactory(x, y);
-			else
-				creators[labelIndex].setMinMax(x, y);
-
-			if( deviation[labelIndex] == null )
-			{
-				deviation[labelIndex] = new GausianHolder();
-			}
+			if ( creators[labelIndex] == null) creators[labelIndex] = new BoxFactory(x, y);
+			else creators[labelIndex].setMinMax(x, y);
 
 			// add the x and y to the deviation
+			if (deviation[labelIndex] == null) deviation[labelIndex] = new GausianHolder();
 			deviation[labelIndex].addPoint(x, y);
 		}
 		
 		Box [] boxes = new Box[maxLabel];
 		for (int i=0; i<boxes.length; i++)
-			if (creators[i] != null)
-				boxes[i] = creators[i].getBox();            
-
+		{
+			if (creators[i] != null) boxes[i] = creators[i].getBox();
+		}
 		
-		
-//		for (int i=0; i<deviation.length; i++){
-//			if (deviation[i] == null)
-//				continue;
-//				
-//			double x = deviation[i].x.mean();
-//			double y = deviation[i].y.mean();
-//			double xDev = deviation[i].x.deviation();
-//			double yDev = deviation[i].y.deviation();
-//		
-//			for (int l=1; l<=4; l++)
-//				boxlist.add(new Box((int)(x-l*xDev),(int)(y-l*yDev),(int)(x+l*xDev),(int)(y+l*yDev)));
-//		}
-			
-
 		UnionFind union = new UnionFind();
 		for( int i = 0; i < maxLabel; i++ )
 		{
 			Box outerBox = boxes[i];
 			GausianHolder outerGaus = deviation[i];
-			if (outerBox == null || outerGaus == null)
-				continue;
+			if (outerBox == null || outerGaus == null) continue;
 			double outerX = outerGaus.x.mean();
 			double outerY = outerGaus.y.mean();
 			
@@ -106,14 +82,13 @@ public class BoundingBoxExtractor
 				Box innerBox = boxes[j];
 				GausianHolder innerGaus = deviation[j];
 				
-				if (innerBox == null || innerGaus == null)
-					continue;
+				if (innerBox == null || innerGaus == null) continue;
 				
 				double innerX = innerGaus.x.mean();
 				double innerY = innerGaus.y.mean();
 				
 				double diffX = Math.abs(innerX-outerX);
-				double diffY = Math.abs(innerY-outerY);				
+				double diffY = Math.abs(innerY-outerY);
 				
 				double mahalanobisX, mahalanobisY;
 				
@@ -127,31 +102,26 @@ public class BoundingBoxExtractor
 				
 				double distance = Math.max(distanceInnerToOuter, distanceOuterToInner);
 //				System.out.println(distance);
-				if (distance < 12)
-					union.union(i, j);
+				if (distance < 12) union.union(i, j);
 			}	
 		}
 		
-		Box [] appendedBoxes = new Box [maxLabel]; 
+		Box [] appendedBoxes = new Box [maxLabel];
 
 		List<Box> boxlist = new LinkedList<Box>();
 		
-		for( int i = 0; i < appendedBoxes.length; i++ ){
-			if(boxes[i] == null)
-				continue;
-//			boxlist.add(boxes[i]);
-			
+		for( int i = 0; i < appendedBoxes.length; i++ )
+		{
+			if (boxes[i] == null) continue;
 			int index = union.find(i);
 			appendedBoxes[index] = boxes[i].append(appendedBoxes[index]);
 		}
 		
-		for( int i = 0; i < maxLabel; i++ ){
-			if (appendedBoxes[i] != null)
-				boxlist.add(appendedBoxes[i]);
+		for( int i = 0; i < maxLabel; i++)
+		{
+			if (appendedBoxes[i] != null && appendedBoxes[i].pixels >= minSize) boxlist.add(appendedBoxes[i]);
 		}
-				
-		// */
-
+		
 		return boxlist;
 	}
 
@@ -206,16 +176,15 @@ public class BoundingBoxExtractor
 		}
 
 		Box[] result = new Box[boxArray.length];
-		for( int i = 0; i < boxArray.length; i++ )
+		for( int i = 0; i < boxArray.length; i++)
 		{
 			int index = union.find(i);
 			result[index] = boxArray[i].append(result[index]);
 		}
 
-		for( int i = 0; i < boxArray.length; i++ )
+		for( int i = 0; i < boxArray.length; i++)
 		{
-			if( result[i] != null )
-				newBoxes.add(result[i]);
+			if (result[i] != null) newBoxes.add(result[i]);
 		}
 
 		return newBoxes;

@@ -75,22 +75,6 @@ public class Utils
 		return img;
 	}
 	
-	public static void PositionImagers(int width, int height, int offset, Imager...imagers ){
-		 Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		 
-		 int x = 0;
-		 int y = 0;
-		 
-		 for (Imager img:imagers){
-			 img.setLocation(x, y);
-			 y += height + offset;
-			 if (y+height > dim.height){
-				 y = 0;
-				 x += width + offset;
-			 }
-		 }
-	}
-	
 	/**
 	 * Flash the screen for `millis' milliseconds with given color.
 	 * 

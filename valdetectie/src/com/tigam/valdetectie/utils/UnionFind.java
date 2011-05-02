@@ -102,16 +102,12 @@ public class UnionFind
 	 */
 	public void union(int a, int b)
 	{
-		if (a == b)
-			return;
+		if (a == b) return;
 		
 		Node na = findNode(a);
 		Node nb = findNode(b);
 
-		if( na == nb )
-		{
-			return;
-		}
+		if (na == nb) return;
 
 		// Link the smaller tree under the larger.
 		if( na.rank > nb.rank )

@@ -15,11 +15,13 @@ public class RatioDropFilter implements DropFilter
 	final boolean bigger;
 	final double ratio;
 	
-	public RatioDropFilter(double ratio){
+	public RatioDropFilter(double ratio)
+	{
 		this(ratio, true);
 	}
 	
-	public RatioDropFilter(double ratio, boolean bigger){
+	public RatioDropFilter(double ratio, boolean bigger)
+	{
 		this.ratio = ratio;
 		this.bigger = bigger;
 	}
@@ -27,11 +29,8 @@ public class RatioDropFilter implements DropFilter
 	@Override
 	public boolean dropped(List<Box> history)
 	{
-		if (history.size() == 0)
-			return false;
-		if (bigger)
-			return history.get(0).ratio() > ratio;
-		else
-			return history.get(0).ratio() < ratio;
+		if (history.size() == 0) return false;
+		if (bigger) return history.get(0).ratio() > ratio;
+		else        return history.get(0).ratio() < ratio;
 	}
 }

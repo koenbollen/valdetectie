@@ -19,46 +19,47 @@ public class Box
 	};
 	
 	public final int bottomRightX;
-
 	public final int bottomRightY;
-
 	public final int topLeftX;
-
 	public final int topLeftY;
+	public final int pixels;
 
-	public Box(Box box){
+	public Box(Box box)
+	{
 		super();
 		this.topLeftX = box.topLeftX;
 		this.topLeftY = box.topLeftY;
 		this.bottomRightX = box.bottomRightX;
 		this.bottomRightY = box.bottomRightY;
+		this.pixels = box.pixels;
 	}
 	
-	public Box(int topLeftX, int topLeftY, int bottomRightX, int bottomRightY)
+	public Box(int topLeftX, int topLeftY, int bottomRightX, int bottomRightY, int pixels)
 	{
 		super();
 		this.topLeftX = topLeftX;
 		this.topLeftY = topLeftY;
 		this.bottomRightX = bottomRightX;
 		this.bottomRightY = bottomRightY;
+		this.pixels = pixels;
 	}
 	
-	public double ratio(){
+	public double ratio()
+	{
 		double width = this.bottomRightX - this.topLeftX;
 		double height = this.bottomRightY - this.topLeftY;
-		if (height == 0)
-			return 0;
+		if (height == 0) return 0;
 		return width / height;
 	}
 
 	public Box append(Box that)
 	{
-		if( that == null )
-			return this;
-		return new Box(Math.min(this.topLeftX, that.topLeftX), Math.min(
-				this.topLeftY, that.topLeftY), Math.max(this.bottomRightX,
-				that.bottomRightX), Math.max(this.bottomRightY,
-				that.bottomRightY));
+		if (that == null) return this;
+		return new Box(Math.min(this.topLeftX, that.topLeftX),
+		               Math.min(this.topLeftY, that.topLeftY),
+		               Math.max(this.bottomRightX, that.bottomRightX),
+		               Math.max(this.bottomRightY, that.bottomRightY),
+		               this.pixels + that.pixels);
 	}
 
 	/* (non-Javadoc)
@@ -105,15 +106,13 @@ public class Box
 		Box r = null;
 		if( that != null )
 		{
-			r = new Box(
-					Math.max(this.topLeftX, that.topLeftX),
-					Math.max(this.topLeftY, that.topLeftY),
-					Math.min(this.bottomRightX,that.bottomRightX),
-					Math.min(this.bottomRightY,	that.bottomRightY)
-			);
+			r = new Box(Math.max(this.topLeftX, that.topLeftX),
+			            Math.max(this.topLeftY, that.topLeftY),
+			            Math.min(this.bottomRightX, that.bottomRightX),
+			            Math.min(this.bottomRightY, that.bottomRightY),
+			            Math.abs(this.pixels - that.pixels));
 			
-			if (r.topLeftX > r.bottomRightX || r.topLeftY > r.bottomRightY)
-				return null;
+			if (r.topLeftX > r.bottomRightX || r.topLeftY > r.bottomRightY) return null;
 		}
 		return r;
 	}
@@ -146,14 +145,5 @@ public class Box
 		return "Box [topLeftX=" + topLeftX + ", topLeftY=" + topLeftY
 				+ ", bottomRightX=" + bottomRightX + ", bottomRightY="
 				+ bottomRightY + "]";
-	}
-
-	public static void main(String... args)
-	{
-		Box b1 = new Box(5, 5, 10, 10);
-		Box b2 = new Box(7, 3, 17, 17);
-		
-		System.out.println(b1.intersect(b2));
-		System.out.println(b2.intersect(b1));
 	}
 }

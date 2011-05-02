@@ -18,7 +18,7 @@ import javax.imageio.ImageIO;
 
 import com.tigam.valdetectie.streams.ImageFilterStream;
 import com.tigam.valdetectie.streams.ImageStream;
-import com.tigam.valdetectie.streams.LinuxDeviceImageStream;
+import com.tigam.valdetectie.streams.CaptureDeviceStream;
 import com.tigam.valdetectie.streams.NetworkImageStream;
 import com.tigam.valdetectie.streams.filters.GrayScaleFilter;
 import com.tigam.valdetectie.utils.Utils;
@@ -254,7 +254,7 @@ public final class ImageStreamServer
 		
 		try
 		{
-			ImageStream imgStream = new LinuxDeviceImageStream(320,240,rate);
+			ImageStream imgStream = new CaptureDeviceStream(320,240,rate);
 			if (grayscale) imgStream = new ImageFilterStream( imgStream, GrayScaleFilter.instance );
 			(new ImageStreamServer(imgStream,port)).start();
 			System.out.println( "ImageStreamServer listening on port " + port );

@@ -9,11 +9,13 @@ package com.tigam.valdetectie.utils;
  * @author Nils Dijk <nils.dijk@hva.nl>
  * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
-public class BoxFactory {
+public class BoxFactory
+{
 	int topLeftX = Integer.MAX_VALUE;
 	int topLeftY = Integer.MAX_VALUE;
 	int bottomRightX = Integer.MIN_VALUE;
 	int bottomRightY = Integer.MIN_VALUE;
+	int pixels = 0;
 	boolean display = true;
 	
 	/**
@@ -21,12 +23,15 @@ public class BoxFactory {
 	 * @param newX First coordinate, X-axis. Doesn't matter if it is bottom or top
 	 * @param newY First coordinate, Y-axis. Doesn't matter if it is bottom or top
 	 */
-	public BoxFactory(int newX, int newY) {
+	public BoxFactory(int newX, int newY)
+	{
 		setMinMax(newX, newY);
+		pixels = 1;
 	}
 	
-	public Box getBox(){
-		return new Box(topLeftX, topLeftY, bottomRightX, bottomRightY);
+	public Box getBox()
+	{
+		return new Box(topLeftX, topLeftY, bottomRightX, bottomRightY, pixels);
 	}
 	
 	/**
@@ -51,7 +56,10 @@ public class BoxFactory {
 	 * @param newX New X value introduced to the box
 	 * @param newY New Y value introduced to the box
 	 */
-	public void setMinMax(int newX, int newY) {
+	public void setMinMax(int newX, int newY)
+	{
+		pixels++;
+		
 		setTopLeftX(Math.min(getTopLeftX(), newX));
 		setTopLeftY(Math.min(getTopLeftY(), newY));
 		

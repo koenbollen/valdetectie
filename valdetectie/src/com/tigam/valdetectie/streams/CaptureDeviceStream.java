@@ -16,7 +16,7 @@ import com.tigam.valdetectie.utils.ErrorStreamReader;
  * @author Nils Dijk <nils.dijk@hva.nl>
  * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
-public class LinuxDeviceImageStream implements ImageStream
+public class CaptureDeviceStream implements ImageStream
 {
 	
 	public static final String DEFAULT_DEVICE = "/dev/video0";
@@ -48,7 +48,7 @@ public class LinuxDeviceImageStream implements ImageStream
 	 * create a new instance of {@link LinuxDeviceImageStream} with the default parameters
 	 * @throws ImageStreamException If ffmpeg fails. 
 	 */
-	public LinuxDeviceImageStream() throws ImageStreamException{
+	public CaptureDeviceStream() throws ImageStreamException{
 		this (1024, 768);
 	}
 	
@@ -58,7 +58,7 @@ public class LinuxDeviceImageStream implements ImageStream
 	 * @param height the height of the image to capture
 	 * @throws ImageStreamException If ffmpeg fails.
 	 */
-	public LinuxDeviceImageStream(int width, int height) throws ImageStreamException{
+	public CaptureDeviceStream(int width, int height) throws ImageStreamException{
 		this(width,height,24);
 	}
 	
@@ -69,7 +69,7 @@ public class LinuxDeviceImageStream implements ImageStream
 	 * @param rate the framerate
 	 * @throws ImageStreamException If ffmpeg fails.
 	 */
-	public LinuxDeviceImageStream(int width, int height, int rate) throws ImageStreamException{
+	public CaptureDeviceStream(int width, int height, int rate) throws ImageStreamException{
 		this(width,height,rate,DEFAULT_DEVICE);
 	}
 	
@@ -81,30 +81,30 @@ public class LinuxDeviceImageStream implements ImageStream
 	 * @param device the device to capture from
 	 * @throws ImageStreamException If ffmpeg fails.
 	 */
-	public LinuxDeviceImageStream(int width, int height, int rate, String device) throws ImageStreamException{
+	public CaptureDeviceStream(int width, int height, int rate, String device) throws ImageStreamException
+	{
 		this.width = width;
 		this.height = height;
 		this.device = device;
 		
 		InputStream in = null;
-		try {
-			String resolution = this.width+"x"+this.height;
-			String command = "ffmpeg -v 0 -f video4linux2 -s "+resolution+" -i " + this.device + " -r "+rate+" -s "+resolution+" -f image2pipe -vcodec bmp -";
-			
+		try
+		{
+			String resolution = this.width + "x" + this.height;
+			String command = "ffmpeg -v 0 -s " + resolution + " -r " + rate;
+			if (System.getProperty("os.name").startsWith("Windows")) command += " -f vfwcap -i 0";
+			else command += " -f video4linux2 -i " + this.device;
+			command += " -f image2pipe -vcodec bmp -";
 			Process cam = Runtime.getRuntime().exec(command);
 			(new ErrorStreamReader(cam.getErrorStream(),false)).start();
 			in = cam.getInputStream();
-		} catch (IOException ball){
-			throw new ImageStreamException( "Unable to start ffmpeg.", ball );
-		} catch (SecurityException ball){
-			throw new ImageStreamException( "Unable to start ffmpeg.", ball );
 		}
+		catch (IOException ball){throw new ImageStreamException( "Unable to start ffmpeg.", ball);}
+		catch (SecurityException ball){throw new ImageStreamException( "Unable to start ffmpeg.", ball);}
 		this.imageInput = in;
 		
 		// skip first frames
-		for (int i=0; i<10; i++)
-			this.read();
-		
+		for (int i=0; i<10; i++) this.read();
 	}
 	
 	@Override

@@ -20,11 +20,9 @@ import javax.swing.JLabel;
  * @author Nils Dijk <nils.dijk@hva.nl>
  * @author Sam Zwaan <sam.zwaan@hva.nl>
  */
-@Deprecated
+ 
 public class Imager extends JFrame
 {
-	private static final long serialVersionUID = -4362164667953944983L;
-	
 	private ImageIcon icon;
 	private JLabel label;
 	

@@ -13,7 +13,6 @@ import java.io.InputStreamReader;
  */
 public class ErrorStreamReader extends Thread
 {
-
 	private final BufferedReader reader;
 	private final boolean verbose;
 
@@ -31,35 +30,18 @@ public class ErrorStreamReader extends Thread
 
 	public void run()
 	{
-		if( verbose )
+		String line;
+		while(!isInterrupted())
 		{
-			while( !isInterrupted() )
+			try
 			{
-				try
-				{
-					String s = reader.readLine();
-					if (s != null)
-						System.err.println(s);
-	
-				} catch( IOException e )
-				{
-					e.printStackTrace();
-					break;
-				}
+				line = reader.readLine();
+				if (verbose && line != null) System.err.println(line);
 			}
-		}
-		else
-		{
-			while( !isInterrupted() )
+			catch( IOException e )
 			{
-				try
-                {
-	                reader.readLine();
-                }
-                catch( IOException e )
-                {
-	                break;
-                }
+				if (verbose) e.printStackTrace();
+				break;
 			}
 		}
 	}
